@@ -12,36 +12,45 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      leads: {
+      audit_logs: {
         Row: {
           id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-          message: string | null;
-          service_interest: string | null;
+          nombre_empresa: string;
+          correo: string;
+          telefono: string;
+          giro: string;
+          presupuesto: number;
+          ubicacion: 'CDMX' | 'EDOMEX';
+          alcaldia_municipio: string;
+          descripcion_problema: string;
+          acepta_tyc: boolean;
           created_at: string;
-          status: 'new' | 'contacted' | 'converted' | 'discarded';
         };
         Insert: {
           id?: string; // UUID generado por defecto
-          name: string;
-          email: string;
-          phone?: string | null;
-          message?: string | null;
-          service_interest?: string | null;
+          nombre_empresa: string;
+          correo: string;
+          telefono: string;
+          giro: string;
+          presupuesto: number;
+          ubicacion: 'CDMX' | 'EDOMEX';
+          alcaldia_municipio: string;
+          descripcion_problema: string;
+          acepta_tyc: boolean;
           created_at?: string;
-          status?: 'new' | 'contacted' | 'converted' | 'discarded';
         };
         Update: {
           id?: string;
-          name?: string;
-          email?: string;
-          phone?: string | null;
-          message?: string | null;
-          service_interest?: string | null;
+          nombre_empresa?: string;
+          correo?: string;
+          telefono?: string;
+          giro?: string;
+          presupuesto?: number;
+          ubicacion?: 'CDMX' | 'EDOMEX';
+          alcaldia_municipio?: string;
+          descripcion_problema?: string;
+          acepta_tyc?: boolean;
           created_at?: string;
-          status?: 'new' | 'contacted' | 'converted' | 'discarded';
         };
       };
       // Aquí se agregarán más tablas en el futuro (ej. services, testimonials, etc.)
@@ -59,6 +68,6 @@ export interface Database {
 }
 
 // Alias para facilitar el uso
-export type LeadRow = Database['public']['Tables']['leads']['Row'];
-export type LeadInsert = Database['public']['Tables']['leads']['Insert'];
-export type LeadUpdate = Database['public']['Tables']['leads']['Update'];
+export type AuditLogRow = Database['public']['Tables']['audit_logs']['Row'];
+export type AuditLogInsert = Database['public']['Tables']['audit_logs']['Insert'];
+export type AuditLogUpdate = Database['public']['Tables']['audit_logs']['Update'];

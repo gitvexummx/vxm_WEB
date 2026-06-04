@@ -3,59 +3,88 @@
  * 
  * Representa un registro de contacto potencial en el sistema.
  * Esta entidad es pura, no depende de frameworks ni infraestructura externa.
+ * 
+ * Estructura según info.md - Campos del formulario de contacto
  */
 
 export interface LeadProps {
   id?: string;
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-  status: LeadStatus;
-  createdAt: Date;
-  updatedAt?: Date;
+  nombre_empresa: string;
+  correo: string;
+  telefono: string;
+  giro: string;
+  presupuesto: number;
+  ubicacion: 'CDMX' | 'EDOMEX';
+  alcaldia_municipio: string;
+  descripcion_problema: string;
+  acepta_tyc: boolean;
+  createdAt?: Date;
 }
-
-export type LeadStatus = 'pending' | 'contacted' | 'converted' | 'rejected';
 
 export class Lead {
   private readonly _id?: string;
-  private readonly _name: string;
-  private readonly _email: string;
-  private readonly _phone?: string;
-  private readonly _message: string;
-  private _status: LeadStatus;
+  private readonly _nombre_empresa: string;
+  private readonly _correo: string;
+  private readonly _telefono: string;
+  private readonly _giro: string;
+  private readonly _presupuesto: number;
+  private readonly _ubicacion: 'CDMX' | 'EDOMEX';
+  private readonly _alcaldia_municipio: string;
+  private readonly _descripcion_problema: string;
+  private readonly _acepta_tyc: boolean;
   private readonly _createdAt: Date;
-  private _updatedAt?: Date;
 
   constructor(props: LeadProps) {
     this._id = props.id;
-    this._name = props.name.trim();
-    this._email = props.email.toLowerCase().trim();
-    this._phone = props.phone?.trim();
-    this._message = props.message.trim();
-    this._status = props.status;
-    this._createdAt = props.createdAt;
-    this._updatedAt = props.updatedAt;
+    this._nombre_empresa = props.nombre_empresa.trim();
+    this._correo = props.correo.toLowerCase().trim();
+    this._telefono = props.telefono.trim();
+    this._giro = props.giro.trim();
+    this._presupuesto = props.presupuesto;
+    this._ubicacion = props.ubicacion;
+    this._alcaldia_municipio = props.alcaldia_municipio.trim();
+    this._descripcion_problema = props.descripcion_problema.trim();
+    this._acepta_tyc = props.acepta_tyc;
+    this._createdAt = props.createdAt ?? new Date();
 
     this.validate();
   }
 
   private validate(): void {
-    if (!this._name || this._name.length < 2) {
-      throw new Error('El nombre debe tener al menos 2 caracteres');
+    if (!this._nombre_empresa || this._nombre_empresa.length < 2) {
+      throw new Error('El nombre de la empresa debe tener al menos 2 caracteres');
     }
 
-    if (!this._email || !this.isValidEmail(this._email)) {
-      throw new Error('El email no es válido');
+    if (!this._correo || !this.isValidEmail(this._correo)) {
+      throw new Error('El correo electrónico no es válido');
     }
 
-    if (!this._message || this._message.length < 10) {
-      throw new Error('El mensaje debe tener al menos 10 caracteres');
+    if (!this._telefono || this._telefono.length < 10) {
+      throw new Error('El teléfono debe tener al menos 10 dígitos');
     }
 
-    if (this._phone && !this.isValidPhone(this._phone)) {
-      throw new Error('El teléfono no es válido');
+    if (!this._giro || this._giro.length < 2) {
+      throw new Error('El giro de la empresa debe tener al menos 2 caracteres');
+    }
+
+    if (this._presupuesto <= 0) {
+      throw new Error('El presupuesto debe ser mayor a 0');
+    }
+
+    if (!['CDMX', 'EDOMEX'].includes(this._ubicacion)) {
+      throw new Error('La ubicación debe ser CDMX o EDOMEX');
+    }
+
+    if (!this._alcaldia_municipio || this._alcaldia_municipio.length < 2) {
+      throw new Error('La alcaldía o municipio debe tener al menos 2 caracteres');
+    }
+
+    if (!this._descripcion_problema || this._descripcion_problema.length < 10) {
+      throw new Error('La descripción del problema debe tener al menos 10 caracteres');
+    }
+
+    if (!this._acepta_tyc) {
+      throw new Error('Debe aceptar los términos y condiciones');
     }
   }
 
@@ -64,61 +93,65 @@ export class Lead {
     return emailRegex.test(email);
   }
 
-  private isValidPhone(phone: string): boolean {
-    const phoneRegex = /^[\d\s\+\-\(\)]{7,}$/;
-    return phoneRegex.test(phone);
-  }
-
-  // Getters (inmutables excepto status y updatedAt)
+  // Getters (inmutables)
   get id(): string | undefined {
     return this._id;
   }
 
-  get name(): string {
-    return this._name;
+  get nombre_empresa(): string {
+    return this._nombre_empresa;
   }
 
-  get email(): string {
-    return this._email;
+  get correo(): string {
+    return this._correo;
   }
 
-  get phone(): string | undefined {
-    return this._phone;
+  get telefono(): string {
+    return this._telefono;
   }
 
-  get message(): string {
-    return this._message;
+  get giro(): string {
+    return this._giro;
   }
 
-  get status(): LeadStatus {
-    return this._status;
+  get presupuesto(): number {
+    return this._presupuesto;
+  }
+
+  get ubicacion(): 'CDMX' | 'EDOMEX' {
+    return this._ubicacion;
+  }
+
+  get alcaldia_municipio(): string {
+    return this._alcaldia_municipio;
+  }
+
+  get descripcion_problema(): string {
+    return this._descripcion_problema;
+  }
+
+  get acepta_tyc(): boolean {
+    return this._acepta_tyc;
   }
 
   get createdAt(): Date {
     return this._createdAt;
   }
 
-  get updatedAt(): Date | undefined {
-    return this._updatedAt;
-  }
-
-  // Methods que modifican estado
-  updateStatus(newStatus: LeadStatus): void {
-    this._status = newStatus;
-    this._updatedAt = new Date();
-  }
-
   // Convertir a objeto plano para persistencia
   toObject(): LeadProps {
     return {
       id: this._id,
-      name: this._name,
-      email: this._email,
-      phone: this._phone,
-      message: this._message,
-      status: this._status,
+      nombre_empresa: this._nombre_empresa,
+      correo: this._correo,
+      telefono: this._telefono,
+      giro: this._giro,
+      presupuesto: this._presupuesto,
+      ubicacion: this._ubicacion,
+      alcaldia_municipio: this._alcaldia_municipio,
+      descripcion_problema: this._descripcion_problema,
+      acepta_tyc: this._acepta_tyc,
       createdAt: this._createdAt,
-      updatedAt: this._updatedAt,
     };
   }
 
