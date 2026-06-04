@@ -6,34 +6,28 @@
    CSS Variables - Theme Configuration
    ============================================ */
 :root {
-  /* Colors - Neon Palette */
-  --neon-blue: #00f3ff;
-  --neon-purple: #bc13fe;
-  --neon-pink: #ff00ff;
-  --neon-green: #00ff87;
-  --neon-yellow: #ffe600;
-  --neon-orange: #ff5e00;
+  /* Colors - Neon Palette (from info.md) */
+  --neon-primary: #D946EF;      /* Púrpura */
+  --neon-secondary: #F97316;    /* Naranja rosado */
   
   /* Dark Backgrounds */
-  --dark-900: #0a0a0f;
-  --dark-800: #12121a;
+  --dark-900: #05050A;          /* Negro espacial */
+  --dark-800: #0a0a0f;
   --dark-700: #1a1a25;
   --dark-600: #252532;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-  --gradient-secondary: linear-gradient(135deg, var(--neon-pink), var(--neon-orange));
-  --gradient-radial: radial-gradient(circle at center, rgba(0, 243, 255, 0.15) 0%, transparent 70%);
+  --gradient-primary: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
+  --gradient-secondary: linear-gradient(135deg, var(--neon-secondary), var(--neon-primary));
+  --gradient-radial: radial-gradient(circle at center, rgba(217, 70, 239, 0.15) 0%, transparent 70%);
   
   /* Shadows */
-  --shadow-neon-blue: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
-  --shadow-neon-purple: 0 0 10px rgba(188, 19, 254, 0.5), 0 0 20px rgba(188, 19, 254, 0.3);
-  --shadow-neon-pink: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3);
-  --shadow-neon-green: 0 0 10px rgba(0, 255, 135, 0.5), 0 0 20px rgba(0, 255, 135, 0.3);
+  --shadow-neon-primary: 0 0 10px rgba(217, 70, 239, 0.5), 0 0 20px rgba(217, 70, 239, 0.3);
+  --shadow-neon-secondary: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 20px rgba(249, 115, 22, 0.3);
   
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
   /* Transitions */
@@ -52,7 +46,7 @@
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
-  --border-color: rgba(0, 243, 255, 0.1);
+  --border-color: rgba(217, 70, 239, 0.1);
 }
 
 /* Light mode */
@@ -63,7 +57,7 @@
   --text-primary: #0a0a0f;
   --text-secondary: #52525b;
   --text-muted: #a1a1aa;
-  --border-color: rgba(0, 243, 255, 0.2);
+  --border-color: rgba(217, 70, 239, 0.2);
 }
 
 /* ============================================
@@ -92,7 +86,7 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: var(--neon-blue);
+  background-color: var(--neon-primary);
   color: var(--dark-900);
 }
 
@@ -107,12 +101,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--neon-blue);
+  background: var(--neon-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-purple);
+  background: var(--neon-secondary);
 }
 
 /* ============================================
@@ -121,37 +115,37 @@ body {
 
 /* Dot Pattern Background */
 .bg-dot-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f3ff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D946EF' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* Grid Pattern Background */
 .bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(217, 70, 239, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(217, 70, 239, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 /* Neon Glow Effect */
 .neon-glow {
   text-shadow: 
-    0 0 10px rgba(0, 243, 255, 0.5),
-    0 0 20px rgba(0, 243, 255, 0.3),
-    0 0 30px rgba(0, 243, 255, 0.2);
+    0 0 10px rgba(217, 70, 239, 0.5),
+    0 0 20px rgba(217, 70, 239, 0.3),
+    0 0 30px rgba(217, 70, 239, 0.2);
 }
 
 .neon-glow-purple {
   text-shadow: 
-    0 0 10px rgba(188, 19, 254, 0.5),
-    0 0 20px rgba(188, 19, 254, 0.3),
-    0 0 30px rgba(188, 19, 254, 0.2);
+    0 0 10px rgba(217, 70, 239, 0.5),
+    0 0 20px rgba(217, 70, 239, 0.3),
+    0 0 30px rgba(217, 70, 239, 0.2);
 }
 
-.neon-glow-pink {
+.neon-glow-secondary {
   text-shadow: 
-    0 0 10px rgba(255, 0, 255, 0.5),
-    0 0 20px rgba(255, 0, 255, 0.3),
-    0 0 30px rgba(255, 0, 255, 0.2);
+    0 0 10px rgba(249, 115, 22, 0.5),
+    0 0 20px rgba(249, 115, 22, 0.3),
+    0 0 30px rgba(249, 115, 22, 0.2);
 }
 
 /* Glass Morphism */
@@ -163,10 +157,10 @@ body {
 }
 
 .glass-dark {
-  background: rgba(10, 10, 15, 0.7);
+  background: rgba(5, 5, 10, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 243, 255, 0.1);
+  border: 1px solid rgba(217, 70, 239, 0.1);
 }
 
 /* Gradient Text */
@@ -191,23 +185,23 @@ body {
 /* Buttons */
 .btn-neon {
   @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300;
-  @apply bg-transparent border-2 border-neon-blue text-neon-blue;
-  @apply hover:bg-neon-blue hover:text-dark-900 hover:shadow-neon-blue;
+  @apply bg-transparent border-2 border-neon-primary text-neon-primary;
+  @apply hover:bg-neon-primary hover:text-dark-900 hover:shadow-neon-primary;
   @apply active:scale-95;
 }
 
 .btn-neon-filled {
   @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300;
-  @apply bg-neon-blue text-dark-900 shadow-neon-blue;
-  @apply hover:bg-neon-purple hover:shadow-neon-purple;
+  @apply bg-neon-primary text-dark-900 shadow-neon-primary;
+  @apply hover:bg-neon-secondary hover:shadow-neon-secondary;
   @apply active:scale-95;
 }
 
 /* Cards */
 .card-neon {
   @apply p-6 rounded-2xl glass-dark;
-  @apply border border-neon-blue/10;
-  @apply hover:border-neon-blue/30 hover:shadow-neon-blue/20;
+  @apply border border-neon-primary/10;
+  @apply hover:border-neon-primary/30 hover:shadow-neon-primary/20;
   @apply transition-all duration-300;
 }
 
@@ -216,7 +210,7 @@ body {
   @apply w-full px-4 py-3 rounded-lg;
   @apply bg-dark-800 border border-dark-600;
   @apply text-white placeholder:text-muted;
-  @apply focus:border-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue/20;
+  @apply focus:border-neon-primary focus:outline-none focus:ring-2 focus:ring-neon-primary/20;
   @apply transition-all duration-200;
 }
 
@@ -260,16 +254,32 @@ body {
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 1;
-    filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.5));
+    filter: drop-shadow(0 0 20px rgba(217, 70, 239, 0.5));
   }
   50% {
     opacity: 0.8;
-    filter: drop-shadow(0 0 40px rgba(0, 243, 255, 0.8));
+    filter: drop-shadow(0 0 40px rgba(217, 70, 239, 0.8));
   }
 }
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Breathing Animation for Radial Gradient */
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.animate-breathing {
+  animation: breathing 4s ease-in-out infinite;
 }
 
 /* Carousel */
@@ -363,7 +373,7 @@ body {
 }
 
 .focus-visible:focus {
-  outline: 2px solid var(--neon-blue);
+  outline: 2px solid var(--neon-primary);
   outline-offset: 2px;
 }
 
