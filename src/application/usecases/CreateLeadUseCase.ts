@@ -41,22 +41,25 @@ export class CreateLeadUseCase {
     try {
       // 2. Transformar a entidad de dominio
       const lead = new Lead({
-        name: validation.data.name,
-        email: validation.data.email,
-        phone: validation.data.phone,
-        service: validation.data.service,
-        message: validation.data.message,
-        status: 'pending',
+        nombre_empresa: validation.data.nombre_empresa,
+        correo: validation.data.correo,
+        telefono: validation.data.telefono,
+        giro: validation.data.giro,
+        presupuesto: validation.data.presupuesto,
+        ubicacion: validation.data.ubicacion,
+        alcaldia_municipio: validation.data.alcaldia_municipio,
+        descripcion_problema: validation.data.descripcion_problema,
+        acepta_tyc: validation.data.acepta_tyc,
         createdAt: new Date(),
       });
 
       // 3. Persistir mediante el repositorio
-      const savedLead = await this.leadRepository.save(lead);
+      const id = await this.leadRepository.create(lead);
 
       // 4. Retornar éxito
       return {
         success: true,
-        id: savedLead.id,
+        id,
         message: 'Lead creado exitosamente',
       };
     } catch (error) {
