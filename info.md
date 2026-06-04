@@ -112,7 +112,58 @@ etc.
 
 ## 7. REGLAS DE EJECUCIÓN PARA LA IA (ESTRICTAS)
 1. Genera el código **archivo por archivo**, indicando claramente la ruta absoluta al inicio de cada bloque (ej: `// src/infrastructure/supabase/client.ts`).
-2. **PROHIBIDO** usar comentarios de relleno como `// aquí va el código` o `// implementar lógica`. Escribe la implementación completa, funcional y tipada.
+
+
+
+-------- PROCEDIMIENTO Y REGLAS DE DESARROLLO ---------
+
+## FASE 1: Cimientos y Configuración (El Entorno)
+  Objetivo: Preparar el terreno, instalar dependencias y configurar las herramientas.
+    - Generar package.json con las versiones exactas definidas.
+    - Generar archivos de configuración: tsconfig.json, next.config.js, tailwind.config.ts, postcss.config.js.
+    - Generar .env.example con las variables necesarias para Supabase (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY).
+    - Generar src/app/globals.css con las importaciones de Tailwind, las variables de colores neón, el patrón de puntos (dot pattern) y los @keyframes para el carrusel infinito.
+    
+## FASE 2: Arquitectura Hexagonal - Núcleo e Infraestructura (El Motor)
+  Objetivo: Definir las reglas de negocio y las conexiones externas sin tocar la UI.
+    - src/core/: Crear las Entidades (ej. Lead.ts) y los Puertos/Interfaces (ej. ILeadRepository.ts).
+    - src/infrastructure/:
+      - Crear el cliente de Supabase (supabaseClient.ts).
+      - Crear el archivo de datos estáticos locations.ts (con el mapa de CDMX y EdoMex).
+      - Implementar el Repositorio (LeadRepository.ts) que cumple con el Puerto y hace el insert a la tabla audit_logs.
+## FASE 3: Lógica de Aplicación y Hooks (El Cerebro)
+  Objetivo: Orquestar la lógica para que la UI no tenga que saber de bases de datos.
+    - src/application/: Crear el Caso de Uso (ej. submitLeadUseCase.ts) que recibe los datos, los valida con Zod y llama al repositorio.
+    - src/presentation/hooks/: Crear useContactForm.ts (que maneje el estado del formulario, la validación de Zod, el envío al caso de uso y el manejo de errores/éxito).
+
+## FASE 4: Componentes UI Atómicos y 3D (Los Ladrillos)
+  Objetivo: Crear los bloques de construcción visuales reutilizables.
+    - src/presentation/components/ui/:
+      - NeonButton.tsx (con efectos hover y glow).
+      - GlassInput.tsx / GlassSelect.tsx (para el formulario).
+      - AccordionCard.tsx (con Framer Motion AnimatePresence y layout, controlando que solo uno esté abierto).
+      - ToastNotification.tsx (para errores).
+    - src/presentation/components/3d/: IcosahedronScene.tsx (Wireframe, emissive, rotación y paralaje con mouse). Recordar a la IA usar next/dynamic con ssr: false para este componente.
+
+## FASE 5: Layouts y Estructura Global (El Esqueleto)
+  Objetivo: Montar la estructura que envolverá a todas las páginas.
+    - src/presentation/layout/Navbar.tsx (visible md y superior, glassmorphism).
+    - src/presentation/layout/Sidebar.tsx (visible < md, drawer con animación).
+    - src/presentation/layout/Footer.tsx (3 columnas exactas como se definieron).
+    - src/app/layout.tsx: El Root Layout que importa las fuentes (Space Grotesk, Geist), envuelve todo con los proveedores necesarios y renderiza Navbar/Sidebar + Footer.
+    
+## FASE 6: Páginas y Rutas (El Ensamblaje Final)
+  Objetivo: Unir todo en las rutas visibles para el usuario.
+    - src/app/page.tsx (Home): Hero con el componente 3D dinámico, Copywriting H1/Subtítulo, y el Carrusel de Servicios (usando los 8 servicios y la técnica de clonación CSS).
+    - src/app/contacto/page.tsx: El formulario completo conectado al hook useContactForm.
+    - src/app/servicios/page.tsx y src/app/servicios/[slug]/page.tsx: Incluir el archivo data.ts local en [slug] con los sub-servicios y renderizar el AccordionCard.
+    - src/app/exito/page.tsx: Página con animación de éxito y mensaje.
+    - src/app/testimonios/page.tsx: Página con el JSON local de testimonios y el SVG default.
+    - src/app/acerca/page.tsx: Placeholder "Texto de Acerca Page".
+
+
+
+**PROHIBIDO** usar comentarios de relleno como `// aquí va el código` o `// implementar lógica`. Escribe la implementación completa, funcional y tipada.
 3. Respeta la Arquitectura Hexagonal: Los componentes de UI (`presentation`) NUNCA deben hacer fetch o llamar a Supabase directamente. Deben usar hooks de la capa `application` que a su vez usan los repositorios de `infrastructure`.
 4. Asegura que todas las clases de Tailwind cumplan con el Design System (colores neón, glassmorphism, responsive).
 5. Prioriza el rendimiento: Usa `next/dynamic` con `ssr: false` para el componente 3D. Usa `next/image` para el logo.
