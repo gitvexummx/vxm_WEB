@@ -1,145 +1,82 @@
 'use client';
 
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useMemo, useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
 
 function NeonIcosahedron() {
+  const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const { camera } = useThree();
+  const { camera, mouse } = useThree();
   
   // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
   const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.5, 0), []);
   
-  // Create edges from geometry
-  const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
-
-  // Dark glassy face material with LOW opacity - ALL faces dark, NO white
-  const glassMaterial = useMemo(
-    () => new THREE.MeshBasicMaterial({
-      color: '#0a0a0a',              // Very dark gray (casi negro)
+  // Wireframe material with neon emissive effect (per info.md spec)
+  const material = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color: '#0a0a0a',
+      wireframe: true,
+      emissive: '#D946EF',
+      emissiveIntensity: 2,
       transparent: true,
-      opacity: 0.15,                  // Low opacity for subtle dark effect
-      side: THREE.FrontSide,
-      depthWrite: true,
-      depthTest: true,
-      blending: THREE.NoBlending,
-      toneMapped: false,
+      opacity: 0.9,
+      side: THREE.DoubleSide,
     }),
     []
   );
 
-  // Auto rotation animation
+  // Inner glow sphere for depth
+  const innerGlowMaterial = useMemo(
+    () => new THREE.MeshBasicMaterial({
+      color: '#D946EF',
+      transparent: true,
+      opacity: 0.15,
+      blending: THREE.AdditiveBlending,
+    }),
+    []
+  );
+
+  // Mouse parallax rotation
   useFrame((state, delta) => {
     if (groupRef.current) {
       // Base auto rotation
-      groupRef.current.rotation.x += delta * 0.15;
-      groupRef.current.rotation.y += delta * 0.2;
+      groupRef.current.rotation.x += delta * 0.1;
+      groupRef.current.rotation.y += delta * 0.15;
+      
+      // Mouse parallax interpolation (smooth follow)
+      const targetRotationX = mouse.y * 0.5;
+      const targetRotationY = mouse.x * 0.5;
+      
+      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.05;
+      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.05;
+    }
+    
+    if (meshRef.current) {
+      // Additional subtle rotation on the mesh itself
+      meshRef.current.rotation.z += delta * 0.05;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Glassmorphism faces - dark and very transparent (NO WHITE) */}
-      <mesh geometry={geometry} material={glassMaterial} renderOrder={1} />
-      
-      {/* THICK NEON EDGES - Multiple layered approach for real thickness */}
-      
-      {/* Layer 1: Wide outer glow - magenta bloom */}
-      <lineSegments geometry={edges} renderOrder={2}>
-        <lineBasicMaterial 
-          color="#D946EF" 
-          transparent 
-          opacity={0.3} 
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Layer 2: Medium glow layer - pinkish bloom */}
-      <lineSegments geometry={edges} renderOrder={2}>
-        <lineBasicMaterial 
-          color="#f9168f" 
-          transparent 
-          opacity={0.5} 
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Layer 3: Inner bright core - light magenta hot center for neon effect */}
-      <lineSegments geometry={edges} renderOrder={2}>
-        <lineBasicMaterial 
-          color="#ff88ff" 
-          transparent 
-          opacity={0.7} 
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Layer 4: Main edge - solid bright magenta core */}
-      <lineSegments geometry={edges} renderOrder={2}>
-        <lineBasicMaterial 
-          color="#D946EF" 
-          opacity={1} 
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Layer 5: Tube geometry for actual thickness - outer tube */}
-      <mesh geometry={edges} renderOrder={3}>
-        <meshBasicMaterial 
-          color="#D946EF" 
-          transparent 
-          opacity={0.4}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-      
-      {/* Layer 6: Secondary tube - brighter inner core */}
-      <mesh geometry={edges} renderOrder={3}>
-        <meshBasicMaterial 
-          color="#ff66ff" 
-          transparent 
-          opacity={0.6}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-      
-      {/* Layer 7: Light magenta core tube for extra neon pop */}
-      <mesh geometry={edges} renderOrder={3}>
-        <meshBasicMaterial 
-          color="#ff88ff" 
-          transparent 
-          opacity={0.8}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
+      {/* Main wireframe icosahedron */}
+      <mesh ref={meshRef} geometry={geometry} material={material} />
       
       {/* Inner glow sphere for depth */}
       <mesh>
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshBasicMaterial
-          color="#D946EF"
-          transparent
-          opacity={0.3}
-          blending={THREE.AdditiveBlending}
-        />
+        <sphereGeometry args={[0.4, 16, 16]} />
+        <primitive object={innerGlowMaterial} />
       </mesh>
       
-      {/* Secondary inner core - light magenta hot */}
+      {/* Secondary inner core */}
       <mesh>
-        <sphereGeometry args={[0.15, 16, 16]} />
+        <sphereGeometry args={[0.2, 16, 16]} />
         <meshBasicMaterial
           color="#ff88ff"
           transparent
-          opacity={0.5}
+          opacity={0.3}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
