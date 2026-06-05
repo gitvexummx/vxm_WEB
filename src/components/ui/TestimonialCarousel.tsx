@@ -20,55 +20,73 @@ interface TestimonialCarouselProps {
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  // Smooth auto-advance every 5 seconds
+  // Smooth auto-advance every 5 seconds with CSS-based interpolation
   useEffect(() => {
     if (isHovering) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
+      setProgress((prev) => {
+        const newProgress = prev + 1;
+        if (newProgress >= 100) {
+          setCurrentIndex((idx) => (idx + 1) % testimonials.length);
+          return 0;
+        }
+        return newProgress;
+      });
+    }, 50);
     
     return () => clearInterval(interval);
   }, [testimonials.length, isHovering]);
 
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
+    setProgress(0);
     setCurrentIndex(index);
   }, []);
 
   const goNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    setProgress(0);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 10);
   }, [testimonials.length]);
 
   const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setProgress(0);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    }, 10);
   }, [testimonials.length]);
 
-  // Create extended array for seamless infinite loop
-  const extendedTestimonials = [
-    testimonials[testimonials.length - 1],
-    ...testimonials,
-    testimonials[0],
-  ];
+  // Calculate interpolation factor (0 to 1) for smooth transitions
+  const t = progress / 100;
 
-  // Visible cards: we show 5 cards centered around the current index
+  // Visible cards with smooth interpolation
   const getVisibleCards = () => {
-    const result: { testimonial: Testimonial; position: number; opacity: number; scale: number }[] = [];
+    const result: { testimonial: Testimonial; position: number; opacity: number; scale: number; xOffset: number }[] = [];
     
     for (let i = -2; i <= 2; i++) {
       const index = (currentIndex + i + testimonials.length) % testimonials.length;
-      const position = i;
       
-      // Center card is largest and most opaque
-      const scale = position === 0 ? 1.1 : 0.85;
-      const opacity = position === 0 ? 1 : 0.5;
+      // Smooth position with interpolation
+      const basePosition = i - t;
+      const distanceFromCenter = Math.abs(basePosition);
+      
+      // Smooth scale and opacity based on distance from center
+      const scale = Math.max(0.85, 1.1 - distanceFromCenter * 0.25);
+      const opacity = Math.max(0.3, 1 - distanceFromCenter * 0.4);
+      
+      // Smooth horizontal offset
+      const xOffset = basePosition * 300;
       
       result.push({
         testimonial: testimonials[index],
-        position,
+        position: i,
         opacity,
         scale,
+        xOffset,
       });
     }
     
@@ -105,17 +123,14 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       </button>
 
       <div className="relative h-[420px] flex items-center justify-center">
-        {visibleCards.map(({ testimonial, position, opacity, scale }, idx) => {
+        {visibleCards.map(({ testimonial, position, opacity, scale, xOffset }, idx) => {
           // Calculate z-index: center is highest, then decreases outward
-          const zIndex = position === 0 ? 20 : 20 - Math.abs(position);
-          
-          // Calculate horizontal offset with overlap
-          const xOffset = position * 300; // pixels offset for overlap effect
+          const zIndex = 20 - Math.abs(position);
           
           return (
             <div
               key={`${testimonial.id}-${idx}`}
-              className="absolute transition-all duration-700 ease-out-cubic"
+              className="absolute transition-all duration-75 ease-linear"
               style={{
                 transform: `translateX(${xOffset}px) scale(${scale})`,
                 opacity,
@@ -124,7 +139,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
                 marginLeft: '-160px', // half of card width (320px / 2)
               }}
             >
-              <TestimonialCard {...testimonial} isCenter={position === 0} />
+              <TestimonialCard {...testimonial} isCenter={Math.abs(xOffset / 300) < 0.5} />
             </div>
           );
         })}

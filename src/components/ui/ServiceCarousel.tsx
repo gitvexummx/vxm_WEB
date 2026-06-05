@@ -26,7 +26,7 @@ export default function ServiceCarousel({
   const carouselRef = useRef<HTMLDivElement>(null);
   const CARD_WIDTH = 352; // w-80 (320px) + mx-4 (32px total margins)
   const VISIBLE_CARDS = Math.ceil(typeof window !== 'undefined' ? window.innerWidth / CARD_WIDTH : 4);
-  const DUPLICATE_COUNT = 2; // Clonar una vez (2 líneas completas)
+  const DUPLICATE_COUNT = 2; // Clonar una vez (2 líneas completas para continuidad perpetua)
   
   // Motion values for drag
   const x = useMotionValue(0);
@@ -36,7 +36,7 @@ export default function ServiceCarousel({
   const singleSetWidth = services.length * CARD_WIDTH;
   const totalWidth = singleSetWidth * DUPLICATE_COUNT;
   
-  // Auto-play functionality
+  // Auto-play functionality with smooth continuous motion
   useEffect(() => {
     if (!autoPlay || isHovering) return;
     
@@ -51,13 +51,15 @@ export default function ServiceCarousel({
     return () => controls.stop();
   }, [autoPlay, isHovering, services.length, singleSetWidth, autoPlayInterval, x]);
   
-  // Reset position when reaching the end (for seamless loop)
+  // Reset position INSTANTLY when reaching the end (for seamless loop with 0s delay)
   useEffect(() => {
     const unsubscribe = x.on('change', (latest) => {
       if (latest <= -singleSetWidth) {
-        x.set(0);
+        // Instant reset to 0 with no transition
+        x.jump(0);
       } else if (latest > 0) {
-        x.set(-singleSetWidth);
+        // Instant reset to -singleSetWidth
+        x.jump(-singleSetWidth);
       }
     });
     
@@ -74,7 +76,7 @@ export default function ServiceCarousel({
     x.set(clampedPosition);
   }, [x, singleSetWidth]);
   
-  // Create duplicated array for infinite scroll
+  // Create duplicated array for infinite scroll (2 copies for seamless perpetuity)
   const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
 
   return (
