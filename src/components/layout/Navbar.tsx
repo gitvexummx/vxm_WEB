@@ -39,7 +39,7 @@ export default function Navbar() {
               <div className="flex items-center space-x-2">
                 <img src="/logo.png" alt="Vexum Logo" className="h-8 w-auto" />
                 <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  VEXUM
+                  VEXUM MX
                 </span>
               </div>
             </Link>
@@ -99,7 +99,7 @@ export default function Navbar() {
                   <div className="flex items-center space-x-2">
                     <img src="/logo.png" alt="Vexum Logo" className="h-8 w-auto" />
                     <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                      VEXUM
+                      VEXUM MX
                     </span>
                   </div>
                 </Link>

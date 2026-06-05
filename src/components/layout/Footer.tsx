@@ -58,15 +58,16 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="inline-block">
               <div className="flex items-center space-x-2">
-                <img src="/logo.png" alt="Vexum Logo" className="h-8 w-auto" />
+                <img src="/logo.png" alt="Vexum MX Logo" className="h-8 w-auto" />
                 <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                  VEXUM
+                  VEXUM MX
                 </span>
               </div>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Transformamos ideas en soluciones digitales innovadoras. 
-              Especialistas en desarrollo web, aplicaciones móviles y tecnologías emergentes.
+              En Vexum MX desarrollamos las mejores soluciones inteligentes para negocios 
+              de éxito y en crecimiento que buscan liderar, innovar y mantenerse siempre 
+              un paso adelante de su competencia.
             </p>
           </div>
 
@@ -110,7 +111,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-slate-700">
           <p className="text-center text-gray-500 text-sm">
-            © {currentYear} Vexum. Todos los derechos reservados.
+            © {currentYear} Vexum MX. Todos los derechos reservados.
           </p>
         </div>
       </div>
