@@ -24,7 +24,7 @@ export default function Navbar() {
             <Link href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-3">
                 <Image
-                  src="/logo.svg"
+                  src="/logo.png"
                   alt="Vexum MX"
                   width={40}
                   height={40}
@@ -92,7 +92,7 @@ export default function Navbar() {
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <div className="flex items-center space-x-3">
                     <Image
-                      src="/logo.svg"
+                      src="/logo.png"
                       alt="Vexum MX"
                       width={40}
                       height={40}
