@@ -16,25 +16,15 @@ function NeonIcosahedron() {
   // Create edges from geometry
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
 
-  // Dark glassy face material with LOW opacity - truly transparent dark faces
+  // Dark glassy face material with LOW opacity - ALL faces dark, NO white
   const glassMaterial = useMemo(
-    () => new THREE.MeshPhysicalMaterial({
-      color: '#0a0a0f',              // Very dark color (casi negro)
+    () => new THREE.MeshBasicMaterial({
+      color: '#0a0a0a',              // Very dark gray (casi negro)
       transparent: true,
-      opacity: 0.08,                  // Very low opacity for subtle effect
-      roughness: 0.1,
-      metalness: 0.05,
-      clearcoat: 0.3,
-      clearcoatRoughness: 0.05,
-      transmission: 0.0,              // Cero transmisión para evitar blanco
-      thickness: 0.5,
+      opacity: 0.15,                  // Low opacity for subtle dark effect
       side: THREE.DoubleSide,
-      envMapIntensity: 0.0,           // Sin intensidad de envMap para evitar reflejos blancos
-      reflectivity: 0.0,              // Cero reflectividad para evitar blanco
-      ior: 1.0,                       // IOR neutro
-      specularIntensity: 0.0,         // Sin especular para evitar highlights blancos
-      attenuationColor: '#0a0a0f',    // Color de atenuación oscuro
-      attenuationDistance: 1.0,
+      depthWrite: false,
+      blending: THREE.NormalBlending,
     }),
     []
   );
