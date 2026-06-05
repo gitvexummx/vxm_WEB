@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import ServiceCarousel from '@/components/ui/ServiceCarousel';
-import TestimonialCard from '@/components/ui/TestimonialCard';
+import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
 
 // Dynamic import for 3D component with SSR disabled - performance optimized
 const GlassIcosahedron = dynamic(() => import('@/components/ui/GlassIcosahedron'), {
@@ -191,11 +191,7 @@ export default function HomePage() {
               Historias de éxito de empresas que confiaron en nosotros
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
-              <TestimonialCard key={testimonial.id} {...testimonial} />
-            ))}
-          </div>
+          <TestimonialCarousel testimonials={testimonials} />
           <div className="text-center mt-12">
             <Link
               href="/testimonios"
