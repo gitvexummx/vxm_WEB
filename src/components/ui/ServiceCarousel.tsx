@@ -25,8 +25,7 @@ export default function ServiceCarousel({
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const CARD_WIDTH = 352; // w-80 (320px) + mx-4 (32px total margins)
-  const VISIBLE_CARDS = Math.ceil(typeof window !== 'undefined' ? window.innerWidth / CARD_WIDTH : 4);
-  const DUPLICATE_COUNT = 2; // Clonar una vez (2 líneas completas para continuidad perpetua)
+  const DUPLICATE_COUNT = 2; // Dos copias para continuidad perpetua
   
   // Motion values for drag
   const x = useMotionValue(0);
@@ -34,9 +33,8 @@ export default function ServiceCarousel({
   
   // Calculate total width of one complete set
   const singleSetWidth = services.length * CARD_WIDTH;
-  const totalWidth = singleSetWidth * DUPLICATE_COUNT;
   
-  // Auto-play functionality with smooth continuous motion
+  // Auto-play functionality with smooth continuous motion - sin alternate, solo loop continuo
   useEffect(() => {
     if (!autoPlay || isHovering) return;
     
@@ -55,7 +53,7 @@ export default function ServiceCarousel({
   useEffect(() => {
     const unsubscribe = x.on('change', (latest) => {
       if (latest <= -singleSetWidth) {
-        // Instant reset to 0 with no transition
+        // Instant reset to 0 with no transition - salto imperceptible por los clones
         x.jump(0);
       } else if (latest > 0) {
         // Instant reset to -singleSetWidth
