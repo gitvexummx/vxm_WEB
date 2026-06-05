@@ -1,1 +1,1 @@
-(src/app/globals.css, src/app/layout.tsx, src/components/layout/Navbar.tsx)
+Nothing needs to be added to .gitignore since the only modified file is a source code file (.tsx) and there are no build artifacts, dependencies, or temporary files in the changes.
