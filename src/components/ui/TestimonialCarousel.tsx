@@ -24,11 +24,11 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
 
   // Smooth auto-advance every 5 seconds with CSS-based interpolation
   useEffect(() => {
-    if (isHovering) return;
+    if (isHovering || testimonials.length <= 1) return;
     
     const interval = setInterval(() => {
       setProgress((prev) => {
-        const newProgress = prev + 1;
+        const newProgress = prev + 2; // Faster progress for smoother feel
         if (newProgress >= 100) {
           setCurrentIndex((idx) => (idx + 1) % testimonials.length);
           return 0;
@@ -76,10 +76,10 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       // Smooth scale and opacity based on distance from center
       const scale = Math.max(0.85, 1.1 - distanceFromCenter * 0.25);
-      const opacity = Math.max(0.3, 1 - distanceFromCenter * 0.4);
+      const opacity = Math.max(0.4, 1 - distanceFromCenter * 0.35);
       
       // Smooth horizontal offset
-      const xOffset = basePosition * 300;
+      const xOffset = basePosition * 320;
       
       result.push({
         testimonial: testimonials[index],
@@ -208,9 +208,9 @@ function TestimonialCard({
         </div>
 
         {/* Content */}
-        <div className="testimonial-card-content">
+        <div className="testimonial-card-content flex-1 min-w-0">
           {/* Stars */}
-          <div className="testimonial-card-stars">
+          <div className="testimonial-card-stars flex mb-2 gap-1">
             {[...Array(5)].map((_, i) => (
               <svg
                 key={i}
@@ -224,22 +224,22 @@ function TestimonialCard({
           </div>
           
           <div className="mb-3">
-            <h4 className="testimonial-card-name">{name}</h4>
-            <p className="testimonial-card-role">
+            <h4 className="testimonial-card-name font-semibold text-white">{name}</h4>
+            <p className="testimonial-card-role text-gray-400 text-sm">
               {role} en {company}
             </p>
           </div>
           
           {/* Quote Icon */}
           <svg
-            className="testimonial-card-quote-icon"
+            className="testimonial-card-quote-icon w-5 h-5 text-neon-primary/60 mb-2"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
           </svg>
           
-          <p className="testimonial-card-text">{content}</p>
+          <p className="testimonial-card-text text-gray-300 text-sm leading-relaxed italic">{content}</p>
         </div>
       </div>
     </div>
