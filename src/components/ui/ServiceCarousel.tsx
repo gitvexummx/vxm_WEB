@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
 
 interface Service {
   id: string;
@@ -24,74 +25,57 @@ export default function ServiceCarousel({
 }: ServiceCarouselProps) {
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const CARD_WIDTH = 352; // w-80 (320px) + mx-4 (32px total margins)
-  const DUPLICATE_COUNT = 2; // Dos copias para continuidad perpetua
+  const trackRef = useRef<HTMLDivElement>(null);
+  const CARD_WIDTH_PERCENT = 100; // Porcentaje relativo al contenedor para compatibilidad universal
+  const DUPLICATE_COUNT = 2;
   
-  // Motion values for drag
-  const x = useMotionValue(0);
-  const xSpring = useSpring(x, { stiffness: 150, damping: 20, mass: 0.5 });
-  
-  // Calculate total width of one complete set
-  const singleSetWidth = services.length * CARD_WIDTH;
-  
-  // Auto-play functionality with smooth continuous motion - sin alternate, solo loop continuo
-  useEffect(() => {
-    if (!autoPlay || isHovering) return;
-    
-    const controls = animate(x, -singleSetWidth, {
-      duration: autoPlayInterval * services.length / 1000,
-      ease: "linear",
-      repeat: Infinity,
-      repeatType: "loop",
-      repeatDelay: 0,
-    });
-    
-    return () => controls.stop();
-  }, [autoPlay, isHovering, services.length, singleSetWidth, autoPlayInterval, x]);
-  
-  // Reset position INSTANTLY when reaching the end (for seamless loop with 0s delay)
-  useEffect(() => {
-    const unsubscribe = x.on('change', (latest) => {
-      if (latest <= -singleSetWidth) {
-        // Instant reset to 0 with no transition - salto imperceptible por los clones
-        x.jump(0);
-      } else if (latest > 0) {
-        // Instant reset to -singleSetWidth
-        x.jump(-singleSetWidth);
-      }
-    });
-    
-    return () => unsubscribe();
-  }, [x, singleSetWidth]);
-  
-  // Handle drag end - snap to nearest card
-  const handleDragEnd = useCallback(() => {
-    const currentX = x.get();
-    const snappedPosition = Math.round(currentX / CARD_WIDTH) * CARD_WIDTH;
-    
-    // Keep within bounds
-    const clampedPosition = Math.min(0, Math.max(-singleSetWidth, snappedPosition));
-    x.set(clampedPosition);
-  }, [x, singleSetWidth]);
-  
-  // Create duplicated array for infinite scroll (2 copies for seamless perpetuity)
   const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
+  
+  // GSAP animation for smooth 60fps infinite scroll
+  useEffect(() => {
+    if (!autoPlay || isHovering || !trackRef.current) return;
+    
+    // Calcular duración basada en cantidad de elementos para velocidad constante
+    const duration = (services.length * autoPlayInterval) / 1000;
+    
+    const ctx = gsap.context(() => {
+      gsap.to(trackRef.current, {
+        xPercent: -100,
+        duration: duration,
+        ease: 'none',
+        repeat: -1,
+        force3D: true,
+        modifiers: {
+          xPercent: (x: number) => {
+            // Reset instantáneo al llegar a -100% para loop perfecto
+            if (x <= -100) {
+              gsap.set(trackRef.current, { xPercent: 0 });
+              return 0;
+            }
+            return x;
+          }
+        }
+      });
+    }, carouselRef);
+    
+    return () => ctx.revert();
+  }, [autoPlay, isHovering, services.length, autoPlayInterval]);
 
   return (
     <div 
+      ref={carouselRef}
       className="relative overflow-hidden py-12 service-carousel-container"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <motion.div
-        ref={carouselRef}
-        className="flex cursor-grab active:cursor-grabbing"
-        style={{ x: xSpring }}
-        drag="x"
-        dragConstraints={{ left: -singleSetWidth, right: 0 }}
-        dragElastic={0.1}
-        onDragEnd={handleDragEnd}
-        whileDrag={{ scale: 0.98 }}
+      <div
+        ref={trackRef}
+        className="flex will-change-transform"
+        style={{ 
+          willChange: 'transform',
+          backfaceVisibility: 'hidden',
+          transform: 'translateZ(0)'
+        }}
       >
         {displayServices.map((service, index) => (
           <motion.div
@@ -115,7 +99,7 @@ export default function ServiceCarousel({
             </a>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
       
       {/* Gradient overlays for fade effect */}
       <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />

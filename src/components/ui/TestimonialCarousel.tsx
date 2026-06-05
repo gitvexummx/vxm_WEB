@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface Testimonial {
   id: string;
@@ -20,125 +21,82 @@ interface TestimonialCarouselProps {
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  // Smooth auto-advance every 5 seconds with CSS-based interpolation
-  useEffect(() => {
-    if (isHovering || testimonials.length <= 1) return;
-    
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress = prev + 2; // Faster progress for smoother feel
-        if (newProgress >= 100) {
-          setCurrentIndex((idx) => (idx + 1) % testimonials.length);
-          return 0;
-        }
-        return newProgress;
-      });
-    }, 50);
-    
-    return () => clearInterval(interval);
-  }, [testimonials.length, isHovering]);
-
+  const carouselRef = useRef<HTMLDivElement>(null);
+  
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
-    setProgress(0);
     setCurrentIndex(index);
   }, []);
 
   const goNext = useCallback(() => {
-    setProgress(0);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 10);
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   }, [testimonials.length]);
 
   const goPrev = useCallback(() => {
-    setProgress(0);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    }, 10);
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   }, [testimonials.length]);
-
-  // Calculate interpolation factor (0 to 1) for smooth transitions
-  const t = progress / 100;
-
-  // Visible cards with smooth interpolation
-  const getVisibleCards = () => {
-    const result: { testimonial: Testimonial; position: number; opacity: number; scale: number; xOffset: number }[] = [];
-    
-    for (let i = -2; i <= 2; i++) {
-      const index = (currentIndex + i + testimonials.length) % testimonials.length;
-      
-      // Smooth position with interpolation
-      const basePosition = i - t;
-      const distanceFromCenter = Math.abs(basePosition);
-      
-      // Smooth scale and opacity based on distance from center
-      const scale = Math.max(0.85, 1.1 - distanceFromCenter * 0.25);
-      const opacity = Math.max(0.4, 1 - distanceFromCenter * 0.35);
-      
-      // Smooth horizontal offset
-      const xOffset = basePosition * 320;
-      
-      result.push({
-        testimonial: testimonials[index],
-        position: i,
-        opacity,
-        scale,
-        xOffset,
-      });
-    }
-    
-    return result;
-  };
-
-  const visibleCards = getVisibleCards();
 
   return (
     <div 
+      ref={carouselRef}
       className="testimonial-carousel-wrapper"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Navigation arrows */}
-      <button
+      <motion.button
         onClick={goPrev}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-      </button>
+      </motion.button>
       
-      <button
+      <motion.button
         onClick={goNext}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </button>
+      </motion.button>
 
       <div className="testimonial-carousel-stage">
-        {visibleCards.map(({ testimonial, position, opacity, scale, xOffset }, idx) => {
-          // Calculate z-index: center is highest, then decreases outward
-          const zIndex = 20 - Math.abs(position);
+        {testimonials.map((testimonial, idx) => {
+          const offset = (idx - currentIndex + testimonials.length) % testimonials.length;
+          const position = offset - Math.floor(testimonials.length / 2);
           
           return (
-            <div
-              key={`${testimonial.id}-${idx}`}
+            <motion.div
+              key={testimonial.id}
               className="testimonial-carousel-card-wrapper"
+              initial={false}
+              animate={{ 
+                opacity: Math.max(0.4, 1 - Math.abs(position) * 0.3),
+                scale: Math.max(0.85, 1.1 - Math.abs(position) * 0.25),
+                x: position * 320,
+                zIndex: 20 - Math.abs(position)
+              }}
+              transition={{ 
+                duration: 0.4, 
+                ease: [0.4, 0, 0.2, 1],
+                willChange: 'transform, opacity'
+              }}
               style={{
-                transform: `translateX(${xOffset}px) scale(${scale})`,
-                opacity,
-                zIndex,
+                willChange: 'transform, opacity',
+                backfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
               }}
             >
-              <TestimonialCard {...testimonial} isCenter={Math.abs(xOffset / 300) < 0.5} />
-            </div>
+              <TestimonialCard {...testimonial} isCenter={Math.abs(position) < 0.5} />
+            </motion.div>
           );
         })}
       </div>
@@ -146,13 +104,15 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       {/* Navigation dots */}
       <div className="testimonial-carousel-dots">
         {testimonials.map((_, idx) => (
-          <button
+          <motion.button
             key={idx}
             onClick={() => goToIndex(idx)}
             className={`testimonial-carousel-dot ${
               idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
           />
         ))}
       </div>
