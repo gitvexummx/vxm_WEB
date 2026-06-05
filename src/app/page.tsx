@@ -9,11 +9,6 @@ import TestimonialCard from '@/components/ui/TestimonialCard';
 // Dynamic import for 3D component with SSR disabled - performance optimized
 const GlassIcosahedron = dynamic(() => import('@/components/ui/GlassIcosahedron'), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-[400px] md:h-[500px] bg-slate-900/30 rounded-xl flex items-center justify-center border border-neon-primary/20">
-      <div className="text-gray-400 animate-pulse">Cargando elemento 3D...</div>
-    </div>
-  ),
 });
 
 interface Service {
@@ -51,11 +46,7 @@ export default function HomePage() {
   }, []);
 
   if (services.length === 0 || testimonials.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-400 animate-pulse">Cargando...</div>
-      </div>
-    );
+    return null;
   }
   return (
     <div className="min-h-screen">
