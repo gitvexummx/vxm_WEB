@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 const navLinks = [
@@ -11,34 +11,18 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-slate-900/80 backdrop-blur-md shadow-lg border-b border-cyan-500/20'
-            : 'bg-transparent'
-        }`}
-      >
+      {/* Always glassy navbar - performance optimized */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-cyan-500/20 will-change-transform">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <img src="/logo.png" alt="Vexum Logo" className="h-8 w-auto" />
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-orange-500 bg-clip-text text-transparent">
                   VEXUM MX
                 </span>
               </div>
@@ -50,7 +34,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 text-sm font-medium uppercase tracking-wider"
+                  className="text-gray-300 hover:text-fuchsia-400 transition-colors duration-200 text-sm font-medium uppercase tracking-wider"
                 >
                   {link.name}
                 </Link>
@@ -60,7 +44,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-colors"
+              className="md:hidden p-2 rounded-lg text-gray-300 hover:text-fuchsia-400 hover:bg-slate-800/50 transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -90,22 +74,21 @@ export default function Navbar() {
           <div
             className={`fixed top-0 right-0 h-full w-72 bg-slate-900/95 backdrop-blur-md z-50 transform transition-transform duration-300 ease-in-out ${
               isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-            } border-l border-cyan-500/20`}
+            } border-l border-fuchsia-500/20`}
           >
             <div className="flex flex-col h-full p-6">
               {/* Header with close button */}
               <div className="flex items-center justify-between mb-8">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <div className="flex items-center space-x-2">
-                    <img src="/logo.png" alt="Vexum Logo" className="h-8 w-auto" />
-                    <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                    <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-orange-500 bg-clip-text text-transparent">
                       VEXUM MX
                     </span>
                   </div>
                 </Link>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-lg text-gray-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-colors"
+                  className="p-2 rounded-lg text-gray-300 hover:text-fuchsia-400 hover:bg-slate-800/50 transition-colors"
                   aria-label="Close menu"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +105,7 @@ export default function Navbar() {
                       <Link
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="block text-gray-300 hover:text-cyan-400 transition-colors duration-200 text-lg font-medium"
+                        className="block text-gray-300 hover:text-fuchsia-400 transition-colors duration-200 text-lg font-medium"
                       >
                         {link.name}
                       </Link>
@@ -139,7 +122,7 @@ export default function Navbar() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-cyan-400 transition-colors"
+                    className="text-gray-400 hover:text-fuchsia-400 transition-colors"
                     aria-label="Facebook"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -152,7 +135,7 @@ export default function Navbar() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-cyan-400 transition-colors"
+                    className="text-gray-400 hover:text-fuchsia-400 transition-colors"
                     aria-label="Instagram"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -165,7 +148,7 @@ export default function Navbar() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-cyan-400 transition-colors"
+                    className="text-gray-400 hover:text-fuchsia-400 transition-colors"
                     aria-label="WhatsApp"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -176,7 +159,7 @@ export default function Navbar() {
                   {/* Email */}
                   <a
                     href="mailto:contacto@vexum.mx"
-                    className="text-gray-400 hover:text-cyan-400 transition-colors"
+                    className="text-gray-400 hover:text-fuchsia-400 transition-colors"
                     aria-label="Email"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
