@@ -45,7 +45,7 @@
         "./public/*"
       ]
     },
-    "baseUrl": ".",
+    //"baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
       "./src/types"
