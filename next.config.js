@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  //swcMinify: true,
   images: {
     remotePatterns: [
       {
@@ -40,5 +40,14 @@ const nextConfig = {
     return config;
   },
 };
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Configuración vacía para habilitar Turbopack sin errores
+  turbopack: {},
+};
+
+
+module.exports = nextConfig;
 
 export default nextConfig;
