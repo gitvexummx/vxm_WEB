@@ -474,10 +474,13 @@ body {
 .service-carousel-card {
   height: 100%;
   min-height: 280px;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .service-carousel-card:hover {
-  transform: scale(1.03);
+  transform: scale(1.03) translateZ(0);
   z-index: 10;
 }
 
@@ -1318,14 +1321,16 @@ body {
   align-items: center;
   justify-content: center;
   perspective: 1000px;
+  overflow: hidden;
 }
 
 .testimonial-carousel-card-wrapper {
   position: absolute;
-  transition: transform 75ms ease-linear, opacity 75ms ease-linear;
   left: 50%;
   margin-left: -160px;
   will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .testimonial-carousel-dots {
