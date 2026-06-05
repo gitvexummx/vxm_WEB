@@ -101,7 +101,7 @@ export default function ServiceCarousel({
             className="flex-shrink-0 w-80 mx-4"
             initial={false}
             whileHover={{ 
-              scale: 1.05,
+              scale: 1.03,
               transition: { duration: 0.2 }
             }}
             whileTap={{ scale: 0.95 }}

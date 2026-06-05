@@ -19,7 +19,7 @@ export default function ServiceCard({
 }: ServiceCardProps) {
   return (
     <Link href={`/servicios/${slug}`}>
-      <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-105">
+      <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
         <div className="w-12 h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
           {getIcon(icon)}
         </div>

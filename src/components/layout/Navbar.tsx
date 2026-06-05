@@ -16,10 +16,10 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Navbar fijo con glassmorphism real - 72px height */}
+      {/* Navbar fijo con glassmorphism en desktop, sólido en móvil - 72px height */}
       <nav className="fixed top-0 left-0 right-0 z-50 will-change-transform" style={{ height: '72px' }}>
-        {/* Glassmorphism background layer - detrás del contenido con blur fuerte */}
-        <div className="absolute inset-0 bg-dark-900/60" style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
+        {/* Glassmorphism background layer en desktop, sólido en móvil */}
+        <div className="absolute inset-0 md:bg-dark-900/60 bg-dark-900/95" style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
         
         {/* Contenido de la navbar */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">

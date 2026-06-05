@@ -5,6 +5,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import ServiceCarousel from '@/components/ui/ServiceCarousel';
 import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
+import ServiceSkeleton from '@/components/ui/ServiceSkeleton';
+import TestimonialSkeleton from '@/components/ui/TestimonialSkeleton';
 
 // Dynamic import for 3D component with SSR disabled - performance optimized
 const GlassIcosahedron = dynamic(() => import('@/components/ui/GlassIcosahedron'), {
@@ -32,12 +34,16 @@ interface Testimonial {
 export default function HomePage() {
   const [services, setServices] = useState<Service[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Load services from JSON
     fetch('/data/services.json')
       .then((res) => res.json())
-      .then((data) => setServices(data.services));
+      .then((data) => {
+        setServices(data.services);
+        setIsLoading(false);
+      });
     
     // Load testimonials from JSON (crearemos este archivo)
     fetch('/data/testimonials.json')
@@ -45,9 +51,59 @@ export default function HomePage() {
       .then((data) => setTestimonials(data.testimonials));
   }, []);
 
-  if (services.length === 0 || testimonials.length === 0) {
-    return null;
+  if (isLoading || services.length === 0 || testimonials.length === 0) {
+    return (
+      <div className="min-h-screen">
+        {/* Loading skeletons */}
+        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-neon-primary/10 via-purple-500/10 to-neon-secondary/10" />
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="h-16 bg-slate-700/30 rounded-lg w-3/4 animate-pulse" />
+                <div className="h-6 bg-slate-700/20 rounded-lg w-full animate-pulse" />
+                <div className="h-6 bg-slate-700/20 rounded-lg w-5/6 animate-pulse" />
+                <div className="flex gap-4 mt-8">
+                  <div className="h-14 w-48 bg-slate-700/30 rounded-lg animate-pulse" />
+                  <div className="h-14 w-48 bg-slate-700/30 rounded-lg animate-pulse" />
+                </div>
+              </div>
+              <div className="hidden md:block h-[500px] bg-slate-700/20 rounded-xl animate-pulse" />
+            </div>
+          </div>
+        </section>
+        
+        {/* Services skeleton */}
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="h-10 bg-slate-700/30 rounded-lg w-64 mx-auto animate-pulse mb-4" />
+              <div className="h-6 bg-slate-700/20 rounded-lg w-96 mx-auto animate-pulse" />
+            </div>
+            <div className="flex overflow-hidden py-12">
+              {[...Array(4)].map((_, i) => (
+                <ServiceSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        {/* Testimonials skeleton */}
+        <section className="py-20 bg-slate-900/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="h-10 bg-slate-700/30 rounded-lg w-80 mx-auto animate-pulse mb-4" />
+              <div className="h-6 bg-slate-700/20 rounded-lg w-96 mx-auto animate-pulse" />
+            </div>
+            <div className="flex justify-center">
+              <TestimonialSkeleton />
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
+  
   return (
     <div className="min-h-screen">
       {/* Hero Section with Glass Icosahedron */}
@@ -89,8 +145,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Column - Glass Icosahedron 3D */}
-            <div className="relative h-[400px] md:h-[500px]">
+            {/* Right Column - Glass Icosahedron 3D - Hidden on mobile */}
+            <div className="relative h-[500px] md:h-[650px] hidden md:block">
               <GlassIcosahedron />
             </div>
           </div>
