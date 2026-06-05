@@ -1,42 +1,42 @@
 ```
 # Dependencies
 node_modules/
-.jest/
-.next/
-.nuxt/
-.un~lock~/
 
 # Build outputs
 dist/
 build/
+.next/
 out/
-public/build/
-.next/cache/
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Environment variables
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 
-# IDE
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+# Logs
+*.log
+
+# Python cache (if any Python files exist in project)
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
 .DS_Store
 Thumbs.db
 
-# Coverage
+# Coverage reports
 coverage/
-.nyc_output/
+htmlcov/
+.coverage
+
+# TypeScript/JavaScript build artifacts
+*.tsbuildinfo
 ```

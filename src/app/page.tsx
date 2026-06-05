@@ -76,13 +76,13 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                 <Link
                   href="/contacto"
-                  className="btn-neon-filled"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-neon-primary to-purple-500 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(217,70,239,0.5)] hover:translate-y-[-2px] active:scale-[0.98]"
                 >
                   Comienza tu Proyecto
                 </Link>
                 <Link
                   href="/servicios"
-                  className="px-8 py-4 bg-slate-800/50 backdrop-blur-sm border border-neon-primary/30 rounded-lg font-semibold text-white hover:bg-slate-700/50 hover:border-neon-primary/50 transition-all duration-300"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-slate-800/50 backdrop-blur-sm border border-neon-primary/30 rounded-lg font-semibold text-white hover:bg-slate-700/50 hover:border-neon-primary/50 hover:shadow-[0_0_20px_rgba(217,70,239,0.3)] transition-all duration-300 hover:translate-y-[-2px] active:scale-[0.98]"
                 >
                   Conoce Nuestros Servicios
                 </Link>
@@ -219,7 +219,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/contacto"
-              className="btn-neon-filled"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-neon-primary to-purple-500 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(217,70,239,0.5)] hover:translate-y-[-2px] active:scale-[0.98]"
             >
               Contáctanos Hoy
             </Link>

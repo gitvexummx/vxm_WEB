@@ -15,24 +15,22 @@ function NeonIcosahedron() {
   // Create edges from geometry
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
 
-  // Glassy face material with REAL glassmorphism effect - transparent faces
+  // Dark glassy face material with LOW opacity - truly transparent dark faces
   const glassMaterial = useMemo(
     () => new THREE.MeshPhysicalMaterial({
-      color: '#0f0f1a',
+      color: '#0a0a0f',              // Very dark color
       transparent: true,
-      opacity: 0.05,
-      roughness: 0.05,
-      metalness: 0.1,
-      clearcoat: 1,
-      clearcoatRoughness: 0.03,
-      transmission: 0.98,
-      thickness: 0.3,
+      opacity: 0.08,                  // Very low opacity for subtle effect
+      roughness: 0.1,
+      metalness: 0.05,
+      clearcoat: 0.3,
+      clearcoatRoughness: 0.05,
+      transmission: 0.1,              // Low transmission for more opacity
+      thickness: 0.5,
       side: THREE.DoubleSide,
-      envMapIntensity: 1.5,
-      reflectivity: 0.9,
-      ior: 1.6,
-      attenuationColor: '#D946EF',
-      attenuationDistance: 0.5,
+      envMapIntensity: 0.5,
+      reflectivity: 0.3,
+      ior: 1.5,
     }),
     []
   );
@@ -47,49 +45,93 @@ function NeonIcosahedron() {
 
   return (
     <group ref={groupRef}>
-      {/* Glassmorphism faces - transparent */}
+      {/* Glassmorphism faces - dark and very transparent */}
       <mesh geometry={geometry} material={glassMaterial} />
       
-      {/* Multiple layered tubes for thick neon edges effect */}
-      {/* Outer glow layer - wide magenta glow */}
+      {/* THICK NEON EDGES - Multiple layered approach for real thickness */}
+      
+      {/* Layer 1: Wide outer glow - magenta bloom */}
       <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#D946EF" transparent opacity={0.15} />
+        <lineBasicMaterial 
+          color="#D946EF" 
+          transparent 
+          opacity={0.3} 
+          linewidth={1}
+        />
       </lineSegments>
       
-      {/* Middle glow layer - pink glow */}
+      {/* Layer 2: Medium glow layer - pinkish bloom */}
       <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#f9168f" transparent opacity={0.25} />
+        <lineBasicMaterial 
+          color="#f9168f" 
+          transparent 
+          opacity={0.5} 
+          linewidth={1}
+        />
       </lineSegments>
       
-      {/* Inner bright core - white-hot center */}
+      {/* Layer 3: Inner bright core - white hot center for neon effect */}
       <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#ffffff" transparent opacity={0.4} />
+        <lineBasicMaterial 
+          color="#ffffff" 
+          transparent 
+          opacity={0.7} 
+          linewidth={1}
+        />
       </lineSegments>
       
-      {/* Main edge - bright magenta core */}
+      {/* Layer 4: Main edge - solid bright magenta core */}
       <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#D946EF" opacity={1} />
+        <lineBasicMaterial 
+          color="#D946EF" 
+          opacity={1} 
+          linewidth={1}
+        />
       </lineSegments>
       
-      {/* Additional offset lines for thickness illusion */}
+      {/* Layer 5: Tube geometry for actual thickness - outer tube */}
       <mesh geometry={edges}>
         <meshBasicMaterial 
           color="#D946EF" 
           transparent 
-          opacity={0.3}
+          opacity={0.4}
           side={THREE.DoubleSide}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
       
-      {/* Inner glow core for extra depth */}
+      {/* Layer 6: Secondary tube - brighter inner core */}
+      <mesh geometry={edges}>
+        <meshBasicMaterial 
+          color="#ff66ff" 
+          transparent 
+          opacity={0.6}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
+      {/* Layer 7: White hot core tube for extra neon pop */}
+      <mesh geometry={edges}>
+        <meshBasicMaterial 
+          color="#ffffff" 
+          transparent 
+          opacity={0.8}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
+      {/* Inner glow sphere for depth */}
       <mesh>
-        <sphereGeometry args={[0.25, 16, 16]} />
+        <sphereGeometry args={[0.3, 16, 16]} />
         <meshBasicMaterial
           color="#D946EF"
           transparent
-          opacity={0.5}
+          opacity={0.3}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
@@ -100,7 +142,7 @@ function NeonIcosahedron() {
         <meshBasicMaterial
           color="#ffffff"
           transparent
-          opacity={0.7}
+          opacity={0.5}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
