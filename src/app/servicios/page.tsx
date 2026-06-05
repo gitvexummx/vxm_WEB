@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import ServiceCard from '@/components/ui/ServiceCard';
+// Importación directa del JSON para Server Components - Sin fetch, más rápido y confiable
+import servicesData from '../../../public/data/services.json';
 
 interface Service {
   id: string;
@@ -10,19 +12,16 @@ interface Service {
 }
 
 export default async function ServiciosPage() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL || []}/data/services.json`, {
-    cache: 'no-store'
-  });
-  const data = await res.json();
-  const services: Service[] = data.services || [];
-
+  // Los datos ya están disponibles en tiempo de build/render
+  const services: Service[] = servicesData.services || [];
+  
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-neon-primary to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-neon-primary to-neon-secondary bg-clip-text text-transparent">
               Nuestros Servicios
             </span>
           </h1>
@@ -35,8 +34,10 @@ export default async function ServiciosPage() {
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {services.map((service) => (
-            <ServiceCard key={service.id} {...service} />
-          ))} 
+            <Link key={service.id} href={`/servicios/${service.slug}`} className="block h-full">
+              <ServiceCard {...service} />
+            </Link>
+          ))}
         </div>
       </div>
     </div>
