@@ -13,6 +13,8 @@ const config: Config = {
       // Colors - Neon Palette
       colors: {
         neon: {
+          primary: '#D946EF',      /* Púrpura - coincide con CSS var */
+          secondary: '#F97316',    /* Naranja rosado - coincide con CSS var */
           blue: '#00f3ff',
           purple: '#bc13fe',
           pink: '#ff00ff',
