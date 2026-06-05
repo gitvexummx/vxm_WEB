@@ -492,15 +492,10 @@ body {
   z-index: 50;
   will-change: transform;
   height: 72px;
-}
-
-.navbar-background {
-  position: absolute;
-  inset: 0;
-  /* Glassy blur con tono ligeramente oscuro - siempre glassy, nunca sólido */
-  background-color: rgba(5, 5, 10, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  /* Glassmorphism con blur y tono ligeramente oscuro */
+  background-color: rgba(5, 5, 10, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 

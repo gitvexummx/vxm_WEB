@@ -16,11 +16,8 @@ export default function Navbar() {
   
   return (
     <>
-      {/* Navbar fijo con glassmorphism en desktop, sólido en móvil - 72px height */}
+      {/* Navbar fijo con glassmorphism - 72px height */}
       <nav className="navbar">
-        {/* Glassmorphism background layer en desktop, sólido en móvil */}
-        <div className="navbar-background"></div>
-        
         {/* Contenido de la navbar */}
         <div className="navbar-content">
           <div className="navbar-inner">

@@ -8,6 +8,26 @@ build/
 .next/
 out/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.python-version
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*
+
 # Environment variables
 .env
 .env.local
@@ -43,6 +63,14 @@ Thumbs.db
 *.swp
 *.swo
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
 # Coverage
 coverage/
 htmlcov/
