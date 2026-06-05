@@ -1,13 +1,5 @@
 {
   "app": {
-    "[project]/src/app/acerca/page": [
-      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
-    ],
-    "[project]/src/app/contacto/page": [
-      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
-    ],
     "[project]/src/app/page": [
       "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
       "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
@@ -17,10 +9,6 @@
       "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
     ],
     "[project]/src/app/servicios/page": [
-      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
-    ],
-    "[project]/src/app/testimonios/page": [
       "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
       "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
     ]
