@@ -10,9 +10,11 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
-      // Colors - Neon Palette
+      // Colors - Neon Palette (matching info.md design system)
       colors: {
         neon: {
+          primary: '#D946EF',      /* Púrpura */
+          secondary: '#F97316',    /* Naranja rosado */
           blue: '#00f3ff',
           purple: '#bc13fe',
           pink: '#ff00ff',
@@ -21,8 +23,8 @@ const config: Config = {
           orange: '#ff5e00',
         },
         dark: {
-          900: '#0a0a0f',
-          800: '#12121a',
+          900: '#05050A',          /* Negro espacial */
+          800: '#0a0a0f',
           700: '#1a1a25',
           600: '#252532',
         },
