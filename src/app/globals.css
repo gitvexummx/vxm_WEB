@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind variants;
 
 /* ============================================
    CSS Variables - Theme Configuration
@@ -35,6 +36,19 @@
   --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  
+  --neon-primary: #D946EF;      /* Púrpura */
+  --neon-secondary: #F97316;    /* Naranja rosado */
+  
+  /* Fondos (Info.md) */
+  --dark-900: #05050A;          /* Negro espacial */
+  --dark-800: #0A0A12;
+  --dark-700: #12121F;
+  
+  /* Tipografías (Info.md) */
+  --font-sans: 'Geist', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
 /* Dark mode (default) */
@@ -76,12 +90,12 @@ html {
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
   line-height: 1.6;
-  overflow-x: hidden;
   min-height: 100vh;
+  background-color: var(--dark-900);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 /* Selection */
@@ -211,6 +225,8 @@ body {
   @apply bg-dark-800 border border-dark-600;
   @apply text-white placeholder:text-muted;
   @apply focus:border-neon-primary focus:outline-none focus:ring-2 focus:ring-neon-primary/20;
+  /*@apply text-white placeholder:text-muted;*/
+  @apply focus:border-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue/20;
   @apply transition-all duration-200;
 }
 
@@ -386,5 +402,50 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+
+/* Animación Breathing para el gradiente radial */
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.animate-breathing {
+  animation: breathing 4s ease-in-out infinite;
+}
+
+/* Utilidades personalizadas */
+@layer utilities {
+  .text-neon-primary {
+    color: var(--neon-primary);
+  }
+  .text-neon-secondary {
+    color: var(--neon-secondary);
+  }
+  .bg-neon-primary {
+    background-color: var(--neon-primary);
+  }
+  .bg-neon-secondary {
+    background-color: var(--neon-secondary);
+  }
+  .border-neon-primary {
+    border-color: var(--neon-primary);
+  }
+  .border-neon-secondary {
+    border-color: var(--neon-secondary);
+  }
+  .shadow-neon-primary {
+    box-shadow: 0 0 15px var(--neon-primary);
+  }
+  .shadow-neon-secondary {
+    box-shadow: 0 0 15px var(--neon-secondary);
   }
 }
