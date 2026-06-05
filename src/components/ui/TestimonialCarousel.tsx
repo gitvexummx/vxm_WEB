@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Testimonial {
@@ -20,9 +20,8 @@ interface TestimonialCarouselProps {
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  
-  // Auto-advance every 5 seconds (step movement, not smooth)
+
+  // Auto-advance every 10 seconds (step movement, not smooth)
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
@@ -30,7 +29,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       // Reset transition flag after animation completes
       setTimeout(() => setIsTransitioning(false), 500);
-    }, 5000);
+    }, 10000);
     
     return () => clearInterval(interval);
   }, [testimonials.length]);
@@ -62,7 +61,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
   const visibleTestimonials = getVisibleTestimonials();
 
   return (
-    <div className="relative w-full overflow-hidden py-8" ref={carouselRef}>
+    <div className="relative w-full overflow-hidden py-8">
       <div className="relative h-[400px] flex items-center justify-center">
         {visibleTestimonials.map(({ testimonial, position, opacity, scale }, idx) => {
           // Calculate z-index: center is highest, then decreases outward
@@ -74,9 +73,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           return (
             <div
               key={`${testimonial.id}-${idx}`}
-              className={`absolute transition-all duration-500 ease-in-out ${
-                isTransitioning ? 'scale-95 opacity-0' : ''
-              }`}
+              className={`absolute transition-all duration-500 ease-in-out`}
               style={{
                 transform: `translateX(${xOffset}px) scale(${scale})`,
                 opacity: isTransitioning ? 0 : opacity,
@@ -129,10 +126,10 @@ function TestimonialCard({
 }: TestimonialCardProps) {
   return (
     <div 
-      className={`glass-heavy border rounded-xl p-6 transition-all duration-300 ${
+      className={`border rounded-xl p-6 transition-all duration-300 ${
         isCenter 
-          ? 'border-neon-primary/50 shadow-neon-primary' 
-          : 'border-neon-primary/20'
+          ? 'border-neon-primary/50 shadow-neon-primary bg-slate-800/80' 
+          : 'border-neon-primary/20 bg-slate-900/80'
       }`}
       style={{
         width: '320px',

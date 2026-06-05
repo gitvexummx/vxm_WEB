@@ -12,35 +12,27 @@ function NeonIcosahedron() {
   // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
   const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.5, 0), []);
   
-  // Create glowing edge lines material - thick neon with glow effect
-  const lineMaterial = useMemo(
-    () => new THREE.LineBasicMaterial({ 
-      color: '#D946EF', // neon-primary magenta
-      transparent: true,
-      opacity: 1,
-    }),
-    []
-  );
-
   // Create edges from geometry
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
 
   // Glassy face material with REAL glassmorphism effect - transparent faces
   const glassMaterial = useMemo(
     () => new THREE.MeshPhysicalMaterial({
-      color: '#1a1a2e',
+      color: '#0f0f1a',
       transparent: true,
-      opacity: 0.08, // Muy transparente para ver através
-      roughness: 0.1,
-      metalness: 0.05,
+      opacity: 0.05,
+      roughness: 0.05,
+      metalness: 0.1,
       clearcoat: 1,
-      clearcoatRoughness: 0.05,
-      transmission: 0.95, // Casi totalmente transparente como vidrio
-      thickness: 0.5,
+      clearcoatRoughness: 0.03,
+      transmission: 0.98,
+      thickness: 0.3,
       side: THREE.DoubleSide,
-      envMapIntensity: 1,
-      reflectivity: 0.8,
-      ior: 1.5, // Index of refraction para efecto vidrio real
+      envMapIntensity: 1.5,
+      reflectivity: 0.9,
+      ior: 1.6,
+      attenuationColor: '#D946EF',
+      attenuationDistance: 0.5,
     }),
     []
   );
@@ -55,39 +47,60 @@ function NeonIcosahedron() {
 
   return (
     <group ref={groupRef}>
-      {/* Outer glow layer - creates neon glow effect */}
-      <lineSegments geometry={edges}>
-        <lineBasicMaterial 
-          color="#D946EF" 
-          transparent 
-          opacity={0.3}
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Middle glow layer */}
-      <lineSegments geometry={edges}>
-        <lineBasicMaterial 
-          color="#f9168f" 
-          transparent 
-          opacity={0.5}
-          linewidth={1}
-        />
-      </lineSegments>
-      
-      {/* Main thick edge - bright neon core */}
-      <lineSegments geometry={edges} material={lineMaterial} />
-      
       {/* Glassmorphism faces - transparent */}
       <mesh geometry={geometry} material={glassMaterial} />
       
+      {/* Multiple layered tubes for thick neon edges effect */}
+      {/* Outer glow layer - wide magenta glow */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#D946EF" transparent opacity={0.15} />
+      </lineSegments>
+      
+      {/* Middle glow layer - pink glow */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#f9168f" transparent opacity={0.25} />
+      </lineSegments>
+      
+      {/* Inner bright core - white-hot center */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#ffffff" transparent opacity={0.4} />
+      </lineSegments>
+      
+      {/* Main edge - bright magenta core */}
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#D946EF" opacity={1} />
+      </lineSegments>
+      
+      {/* Additional offset lines for thickness illusion */}
+      <mesh geometry={edges}>
+        <meshBasicMaterial 
+          color="#D946EF" 
+          transparent 
+          opacity={0.3}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
       {/* Inner glow core for extra depth */}
       <mesh>
-        <sphereGeometry args={[0.3, 16, 16]} />
+        <sphereGeometry args={[0.25, 16, 16]} />
         <meshBasicMaterial
           color="#D946EF"
           transparent
-          opacity={0.4}
+          opacity={0.5}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
+      {/* Secondary inner core - white hot */}
+      <mesh>
+        <sphereGeometry args={[0.15, 16, 16]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.7}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
@@ -101,13 +114,10 @@ export default function GlassIcosahedron() {
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
-        dpr={[1, 2]} // Performance: limit pixel ratio
+        dpr={[1, 2]}
       >
-        {/* Self-illuminated: no external lights needed */}
-        
         <NeonIcosahedron />
         
-        {/* Controls: rotation only, no zoom, no pan */}
         <OrbitControls
           enableZoom={false}
           enablePan={false}
