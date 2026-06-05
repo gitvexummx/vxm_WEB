@@ -22,9 +22,11 @@ function NeonIcosahedron() {
       color: '#0a0a0a',              // Very dark gray (casi negro)
       transparent: true,
       opacity: 0.15,                  // Low opacity for subtle dark effect
-      side: THREE.DoubleSide,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
+      side: THREE.FrontSide,
+      depthWrite: true,
+      depthTest: true,
+      blending: THREE.NoBlending,
+      toneMapped: false,
     }),
     []
   );
@@ -41,12 +43,12 @@ function NeonIcosahedron() {
   return (
     <group ref={groupRef}>
       {/* Glassmorphism faces - dark and very transparent (NO WHITE) */}
-      <mesh geometry={geometry} material={glassMaterial} />
+      <mesh geometry={geometry} material={glassMaterial} renderOrder={1} />
       
       {/* THICK NEON EDGES - Multiple layered approach for real thickness */}
       
       {/* Layer 1: Wide outer glow - magenta bloom */}
-      <lineSegments geometry={edges}>
+      <lineSegments geometry={edges} renderOrder={2}>
         <lineBasicMaterial 
           color="#D946EF" 
           transparent 
@@ -56,7 +58,7 @@ function NeonIcosahedron() {
       </lineSegments>
       
       {/* Layer 2: Medium glow layer - pinkish bloom */}
-      <lineSegments geometry={edges}>
+      <lineSegments geometry={edges} renderOrder={2}>
         <lineBasicMaterial 
           color="#f9168f" 
           transparent 
@@ -66,7 +68,7 @@ function NeonIcosahedron() {
       </lineSegments>
       
       {/* Layer 3: Inner bright core - light magenta hot center for neon effect */}
-      <lineSegments geometry={edges}>
+      <lineSegments geometry={edges} renderOrder={2}>
         <lineBasicMaterial 
           color="#ff88ff" 
           transparent 
@@ -76,7 +78,7 @@ function NeonIcosahedron() {
       </lineSegments>
       
       {/* Layer 4: Main edge - solid bright magenta core */}
-      <lineSegments geometry={edges}>
+      <lineSegments geometry={edges} renderOrder={2}>
         <lineBasicMaterial 
           color="#D946EF" 
           opacity={1} 
@@ -85,7 +87,7 @@ function NeonIcosahedron() {
       </lineSegments>
       
       {/* Layer 5: Tube geometry for actual thickness - outer tube */}
-      <mesh geometry={edges}>
+      <mesh geometry={edges} renderOrder={3}>
         <meshBasicMaterial 
           color="#D946EF" 
           transparent 
@@ -97,7 +99,7 @@ function NeonIcosahedron() {
       </mesh>
       
       {/* Layer 6: Secondary tube - brighter inner core */}
-      <mesh geometry={edges}>
+      <mesh geometry={edges} renderOrder={3}>
         <meshBasicMaterial 
           color="#ff66ff" 
           transparent 
@@ -109,7 +111,7 @@ function NeonIcosahedron() {
       </mesh>
       
       {/* Layer 7: Light magenta core tube for extra neon pop */}
-      <mesh geometry={edges}>
+      <mesh geometry={edges} renderOrder={3}>
         <meshBasicMaterial 
           color="#ff88ff" 
           transparent 
