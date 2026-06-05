@@ -8,11 +8,16 @@ build/
 out/
 
 # Environment variables
+# Environment
 .env
 .env.local
 .env.*
 
 # Editor files
+# Logs
+*.log
+
+# Editor
 .vscode/
 .idea/
 *.swp
@@ -59,7 +64,17 @@ coverage.xml
 *.lib
 *.out
 
-# OS generated files
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Temp files
+*.tmp
+*.swp
+*~
+
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -71,6 +86,14 @@ Icon?
 */
 
 # Archives
+# Testing
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Compressed
 *.zip
 *.tar.gz
 *.tar.bz2
