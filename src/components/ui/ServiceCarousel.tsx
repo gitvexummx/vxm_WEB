@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, useMotionValue, useTransform, useSpring, animate } from 'framer-motion';
 
 interface Service {
   id: string;
@@ -21,47 +22,104 @@ export default function ServiceCarousel({
   autoPlay = true, 
   autoPlayInterval = 3000 
 }: ServiceCarouselProps) {
+  const [isHovering, setIsHovering] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const CARD_WIDTH = 352; // w-80 (320px) + mx-4 (32px total margins)
+  const VISIBLE_CARDS = Math.ceil(typeof window !== 'undefined' ? window.innerWidth / CARD_WIDTH : 4);
+  const DUPLICATE_COUNT = 2; // Clonar una vez (2 líneas completas)
+  
+  // Motion values for drag
+  const x = useMotionValue(0);
+  const xSpring = useSpring(x, { stiffness: 150, damping: 20, mass: 0.5 });
+  
+  // Calculate total width of one complete set
+  const singleSetWidth = services.length * CARD_WIDTH;
+  const totalWidth = singleSetWidth * DUPLICATE_COUNT;
+  
+  // Auto-play functionality
+  useEffect(() => {
+    if (!autoPlay || isHovering) return;
+    
+    const controls = animate(x, -singleSetWidth, {
+      duration: autoPlayInterval * services.length / 1000,
+      ease: "linear",
+      repeat: Infinity,
+      repeatType: "loop",
+      repeatDelay: 0,
+    });
+    
+    return () => controls.stop();
+  }, [autoPlay, isHovering, services.length, singleSetWidth, autoPlayInterval, x]);
+  
+  // Reset position when reaching the end (for seamless loop)
+  useEffect(() => {
+    const unsubscribe = x.on('change', (latest) => {
+      if (latest <= -singleSetWidth) {
+        x.set(0);
+      } else if (latest > 0) {
+        x.set(-singleSetWidth);
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [x, singleSetWidth]);
+  
+  // Handle drag end - snap to nearest card
+  const handleDragEnd = useCallback(() => {
+    const currentX = x.get();
+    const snappedPosition = Math.round(currentX / CARD_WIDTH) * CARD_WIDTH;
+    
+    // Keep within bounds
+    const clampedPosition = Math.min(0, Math.max(-singleSetWidth, snappedPosition));
+    x.set(clampedPosition);
+  }, [x, singleSetWidth]);
+  
+  // Create duplicated array for infinite scroll
+  const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
+
   return (
-    <div className="relative overflow-hidden py-12">
-      <div className="flex animate-scroll hover:pause">
-        {[...services, ...services].map((service, index) => (
+    <div 
+      className="relative overflow-hidden py-12 service-carousel-container"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <motion.div
+        ref={carouselRef}
+        className="flex cursor-grab active:cursor-grabbing"
+        style={{ x: xSpring }}
+        drag="x"
+        dragConstraints={{ left: -singleSetWidth, right: 0 }}
+        dragElastic={0.1}
+        onDragEnd={handleDragEnd}
+        whileDrag={{ scale: 0.98 }}
+      >
+        {displayServices.map((service, index) => (
           <motion.div
             key={`${service.id}-${index}`}
             className="flex-shrink-0 w-80 mx-4"
+            initial={false}
             whileHover={{ 
               scale: 1.05,
               transition: { duration: 0.2 }
             }}
+            whileTap={{ scale: 0.95 }}
           >
-            <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group cursor-pointer relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
-                {getIcon(service.icon)}
+            <a href={`/servicios/${service.slug}`} className="block">
+              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group cursor-pointer relative service-carousel-card">
+                <div className="w-12 h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
+                  {getIcon(service.icon)}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
+                <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
-              <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
-            </div>
+            </a>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
       
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        
-        .animate-scroll {
-          animation: scroll ${autoPlayInterval * services.length}ms linear infinite;
-        }
-        
-        .hover\:pause:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
+      {/* Gradient overlays for fade effect */}
+      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-dark-900 to-transparent pointer-events-none z-10" />
     </div>
   );
 }
