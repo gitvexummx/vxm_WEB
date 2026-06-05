@@ -1,46 +1,83 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Sphere, MeshDistortMaterial } from '@react-three/drei';
-import { useRef } from 'react';
+import { OrbitControls } from '@react-three/drei';
+import { useMemo } from 'react';
 import * as THREE from 'three';
 
-function Icosahedron() {
-  const meshRef = useRef<THREE.Mesh>(null);
+function NeonIcosahedron() {
+  // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
+  const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.5, 0), []);
+  
+  // Create glowing edge lines material
+  const lineMaterial = useMemo(
+    () => new THREE.LineBasicMaterial({ 
+      color: '#D946EF', // neon-primary magenta
+      transparent: true,
+      opacity: 0.9,
+    }),
+    []
+  );
+
+  // Create edges from geometry
+  const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
 
   return (
-    <Sphere args={[1, 20, 20]} ref={meshRef}>
-      <MeshDistortMaterial
-        color="#06b6d4"
-        attach="material"
-        distort={0.4}
-        speed={2}
-        roughness={0.2}
-        metalness={0.8}
-        transparent
-        opacity={0.7}
-      />
-    </Sphere>
+    <group>
+      {/* Glowing wireframe edges - self illuminated */}
+      <lineSegments geometry={edges} material={lineMaterial} />
+      
+      {/* Subtle glassy faces for depth */}
+      <mesh geometry={geometry}>
+        <meshPhysicalMaterial
+          color="#0a0a1a"
+          transparent
+          opacity={0.03}
+          roughness={0.1}
+          metalness={0.9}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          transmission={0.3}
+          thickness={0.5}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      
+      {/* Inner glow core */}
+      <mesh>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshBasicMaterial
+          color="#D946EF"
+          transparent
+          opacity={0.25}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    </group>
   );
 }
 
 export default function GlassIcosahedron() {
   return (
-    <div className="w-full h-[500px] md:h-[600px] bg-slate-900/30 rounded-xl overflow-hidden border border-cyan-500/20">
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -5]} intensity={0.5} color="#a855f7" />
+    <div className="w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden">
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 45 }}
+        gl={{ antialias: true, alpha: true }}
+        dpr={[1, 2]} // Performance: limit pixel ratio
+      >
+        {/* Self-illuminated: no external lights needed */}
         
-        <Icosahedron />
+        <NeonIcosahedron />
         
+        {/* Controls: rotation only, no zoom, no pan */}
         <OrbitControls
-          enableZoom={true}
+          enableZoom={false}
           enablePan={false}
-          minDistance={2}
-          maxDistance={8}
+          rotateSpeed={0.5}
           autoRotate
-          autoRotateSpeed={0.5}
+          autoRotateSpeed={1}
+          minDistance={5}
+          maxDistance={5}
         />
       </Canvas>
     </div>
