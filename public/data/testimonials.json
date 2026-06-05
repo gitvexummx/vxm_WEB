@@ -1,0 +1,31 @@
+{
+  "testimonials": [
+    {
+      "id": "1",
+      "name": "Carlos Mendoza",
+      "role": "CEO",
+      "company": "TechStart México",
+      "content": "Vexum transformó completamente nuestra presencia digital. Su equipo técnico es excepcional y entendieron perfectamente nuestras necesidades.",
+      "stars": 5,
+      "photo": ""
+    },
+    {
+      "id": "2",
+      "name": "Ana Rodríguez",
+      "role": "Directora de Marketing",
+      "company": "Innovate Corp",
+      "content": "La aplicación móvil que desarrollaron superó todas nuestras expectativas. El proceso fue fluido y el resultado final es impresionante.",
+      "stars": 5,
+      "photo": ""
+    },
+    {
+      "id": "3",
+      "name": "Roberto Sánchez",
+      "role": "Fundador",
+      "company": "E-Shop MX",
+      "content": "Gracias a Vexum, nuestras ventas en línea aumentaron un 200%. Su plataforma de e-commerce es robusta y fácil de administrar.",
+      "stars": 5,
+      "photo": ""
+    }
+  ]
+}

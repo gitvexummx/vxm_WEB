@@ -459,3 +459,19 @@ body {
     box-shadow: 0 0 15px var(--neon-secondary);
   }
 }
+/* ============================================
+   Service Carousel - Extra Height for Hover Scale
+   ============================================ */
+.service-carousel-container {
+  padding: 2rem 0;
+}
+
+.service-carousel-card {
+  height: 100%;
+  min-height: 280px;
+}
+
+.service-carousel-card:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
