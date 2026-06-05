@@ -34,11 +34,11 @@ export function useContactForm() {
 
   const [state, setState] = useState<UseContactFormState>({
     values: {
-      name: '',
-      email: '',
-      phone: '',
-      service: '',
-      message: '',
+      nombre_empresa: '',
+      correo: '',
+      telefono: '',
+      giro: '',
+      descripcion_problema: '',
     },
     errors: {},
     isSubmitting: false,

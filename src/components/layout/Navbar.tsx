@@ -13,20 +13,20 @@ const navLinks = [
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  
   return (
     <>
       {/* Navbar fijo con glassmorphism en desktop, sólido en móvil - 72px height */}
-      <nav className="fixed top-0 left-0 right-0 z-50 will-change-transform" style={{ height: '72px' }}>
+      <nav className="navbar">
         {/* Glassmorphism background layer en desktop, sólido en móvil */}
-        <div className="absolute inset-0 md:bg-dark-900/60 bg-dark-900/95" style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
+        <div className="navbar-background"></div>
         
         {/* Contenido de la navbar */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-          <div className="flex items-center justify-between h-full">
+        <div className="navbar-content">
+          <div className="navbar-inner">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <div className="flex items-center space-x-3">
+            <Link href="/" className="navbar-logo">
+              <div className="navbar-logo-link">
                 <Image
                   src="/logo.png"
                   alt="Vexum MX"
@@ -35,22 +35,22 @@ export default function Navbar() {
                   className="w-10 h-10"
                   priority
                 />
-                <span className="text-xl font-bold font-display bg-gradient-to-r from-neon-primary to-neon-secondary bg-clip-text text-transparent hidden sm:block">
+                <span className="navbar-logo-text">
                   VEXUM MX
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="navbar-desktop-nav">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-gray-300 hover:text-neon-primary transition-colors duration-150 text-sm font-medium uppercase tracking-wider relative group"
+                  className="navbar-desktop-link group"
                 >
                   {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-neon-primary to-neon-secondary transition-all duration-300 group-hover:w-full" />
+                  <span className="navbar-desktop-link-underline" />
                 </Link>
               ))}
             </div>
@@ -58,7 +58,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-300 hover:text-neon-primary hover:bg-white/5 transition-colors duration-150"
+              className="navbar-mobile-button"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -80,21 +80,19 @@ export default function Navbar() {
         <>
           {/* Overlay oscuro al 60% */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            className="navbar-mobile-overlay"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
           {/* Sidebar con animación slide */}
           <div
-            className={`fixed top-0 right-0 h-full w-72 bg-dark-900/95 backdrop-blur-md z-50 transform transition-transform duration-300 ease-in-out border-l border-white/10 ${
-              isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
+            className={`navbar-mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}
           >
-            <div className="flex flex-col h-full p-6">
+            <div className="navbar-mobile-sidebar-content">
               {/* Header with close button */}
-              <div className="flex items-center justify-between mb-8">
+              <div className="navbar-mobile-header">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
-                  <div className="flex items-center space-x-3">
+                  <div className="navbar-logo-link">
                     <Image
                       src="/logo.png"
                       alt="Vexum MX"
@@ -102,14 +100,14 @@ export default function Navbar() {
                       height={40}
                       className="w-10 h-10"
                     />
-                    <span className="text-xl font-bold font-display bg-gradient-to-r from-neon-primary to-neon-secondary bg-clip-text text-transparent">
+                    <span className="navbar-logo-text">
                       VEXUM MX
                     </span>
                   </div>
                 </Link>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-lg text-gray-300 hover:text-neon-primary hover:bg-white/5 transition-colors duration-150"
+                  className="navbar-mobile-button"
                   aria-label="Close menu"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,14 +117,14 @@ export default function Navbar() {
               </div>
 
               {/* Navigation Links */}
-              <nav className="flex-1">
-                <ul className="space-y-4">
+              <nav className="navbar-mobile-nav">
+                <ul className="navbar-mobile-nav-list">
                   {navLinks.map((link) => (
                     <li key={link.name}>
                       <Link
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="block text-gray-300 hover:text-neon-primary transition-colors duration-150 text-lg font-medium"
+                        className="navbar-mobile-link"
                       >
                         {link.name}
                       </Link>
@@ -136,14 +134,14 @@ export default function Navbar() {
               </nav>
 
               {/* Social Media Icons */}
-              <div className="mt-auto pt-6 border-t border-white/10">
-                <div className="flex items-center justify-center space-x-6">
+              <div className="navbar-social-section">
+                <div className="navbar-social-list">
                   {/* Facebook */}
                   <a
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-neon-primary transition-colors duration-150"
+                    className="navbar-social-link"
                     aria-label="Facebook"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -156,7 +154,7 @@ export default function Navbar() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-neon-primary transition-colors duration-150"
+                    className="navbar-social-link"
                     aria-label="Instagram"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -169,7 +167,7 @@ export default function Navbar() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-neon-primary transition-colors duration-150"
+                    className="navbar-social-link"
                     aria-label="WhatsApp"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -180,7 +178,7 @@ export default function Navbar() {
                   {/* Email */}
                   <a
                     href="mailto:contacto@vexum.mx"
-                    className="text-gray-400 hover:text-neon-primary transition-colors duration-150"
+                    className="navbar-social-link"
                     aria-label="Email"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

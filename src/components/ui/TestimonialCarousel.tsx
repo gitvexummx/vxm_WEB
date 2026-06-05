@@ -97,14 +97,14 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
 
   return (
     <div 
-      className="relative w-full overflow-hidden py-8"
+      className="testimonial-carousel-wrapper"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Navigation arrows */}
       <button
         onClick={goPrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-800/80 border border-neon-primary/30 text-neon-primary hover:bg-neon-primary/20 transition-all duration-300"
+        className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       <button
         onClick={goNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-800/80 border border-neon-primary/30 text-neon-primary hover:bg-neon-primary/20 transition-all duration-300"
+        className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         </svg>
       </button>
 
-      <div className="relative h-[420px] flex items-center justify-center">
+      <div className="testimonial-carousel-stage">
         {visibleCards.map(({ testimonial, position, opacity, scale, xOffset }, idx) => {
           // Calculate z-index: center is highest, then decreases outward
           const zIndex = 20 - Math.abs(position);
@@ -130,13 +130,11 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           return (
             <div
               key={`${testimonial.id}-${idx}`}
-              className="absolute transition-all duration-75 ease-linear"
+              className="testimonial-carousel-card-wrapper"
               style={{
                 transform: `translateX(${xOffset}px) scale(${scale})`,
                 opacity,
                 zIndex,
-                left: '50%',
-                marginLeft: '-160px', // half of card width (320px / 2)
               }}
             >
               <TestimonialCard {...testimonial} isCenter={Math.abs(xOffset / 300) < 0.5} />
@@ -146,15 +144,13 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       </div>
       
       {/* Navigation dots */}
-      <div className="flex justify-center gap-3 mt-8">
+      <div className="testimonial-carousel-dots">
         {testimonials.map((_, idx) => (
           <button
             key={idx}
             onClick={() => goToIndex(idx)}
-            className={`rounded-full transition-all duration-500 ${
-              idx === currentIndex 
-                ? 'bg-neon-primary w-10 h-3' 
-                : 'bg-gray-600 w-3 h-3 hover:bg-gray-400'
+            className={`testimonial-carousel-dot ${
+              idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
           />
@@ -179,30 +175,21 @@ function TestimonialCard({
 }: TestimonialCardProps) {
   return (
     <div 
-      className={`border rounded-xl p-6 transition-all duration-300 ${
-        isCenter 
-          ? 'border-neon-primary/50 shadow-neon-primary bg-slate-800/80' 
-          : 'border-neon-primary/20 bg-slate-900/80'
-      }`}
-      style={{
-        width: '320px',
-        minHeight: '280px',
-        boxShadow: isCenter ? '0 0 30px rgba(217, 70, 239, 0.3)' : undefined,
-      }}
+      className={`testimonial-card ${isCenter ? 'center' : 'not-center'}`}
     >
       <div className="flex items-start space-x-4">
         {/* Avatar */}
-        <div className="flex-shrink-0">
+        <div className="testimonial-card-avatar">
           {photo ? (
             <Image
               src={photo}
               alt={name}
               width={48}
               height={48}
-              className="w-12 h-12 rounded-full object-cover border-2 border-neon-primary/30"
+              className="testimonial-card-avatar-image"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 flex items-center justify-center border-2 border-neon-primary/30">
+            <div className="testimonial-card-avatar-placeholder">
               <svg
                 className="w-6 h-6 text-neon-primary"
                 fill="none"
@@ -221,9 +208,9 @@ function TestimonialCard({
         </div>
 
         {/* Content */}
-        <div className="flex-1">
+        <div className="testimonial-card-content">
           {/* Stars */}
-          <div className="flex mb-2">
+          <div className="testimonial-card-stars">
             {[...Array(5)].map((_, i) => (
               <svg
                 key={i}
@@ -237,22 +224,22 @@ function TestimonialCard({
           </div>
           
           <div className="mb-3">
-            <h4 className="text-white font-semibold">{name}</h4>
-            <p className="text-gray-400 text-sm">
+            <h4 className="testimonial-card-name">{name}</h4>
+            <p className="testimonial-card-role">
               {role} en {company}
             </p>
           </div>
           
           {/* Quote Icon */}
           <svg
-            className="w-6 h-6 text-neon-primary/50 mb-2"
+            className="testimonial-card-quote-icon"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
           </svg>
           
-          <p className="text-gray-300 leading-relaxed text-sm">{content}</p>
+          <p className="testimonial-card-text">{content}</p>
         </div>
       </div>
     </div>
