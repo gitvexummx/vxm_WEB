@@ -65,7 +65,7 @@ export default function RootLayout({
     <html lang="es" className={`${spaceGrotesk.variable} ${inter.variable}`}>
       <body className="bg-dark-900 text-white antialiased min-h-screen flex flex-col font-sans">
         <Navbar />
-        <main className="flex-grow pt-[72px]">
+        <main className="flex-grow pt-[72px] color-transparent">
           {children}
         </main>
         <Footer />
