@@ -9,15 +9,21 @@
       "subservices": [
         {
           "title": "Chatbots Inteligentes",
-          "description": "Asistentes virtuales 24/7 con procesamiento de lenguaje natural."
+          "paragraph1": "Nuestros chatbots con IA revolucionan la atención al cliente proporcionando respuestas inmediatas y precisas las 24 horas del día, los 7 días de la semana. Utilizamos tecnología de procesamiento de lenguaje natural de última generación para entender el contexto y la intención del usuario.",
+          "features": ["Disponibilidad 24/7 sin interrupciones", "Procesamiento de lenguaje natural avanzado", "Integración con múltiples plataformas", "Aprendizaje continuo basado en interacciones"],
+          "paragraph2": "Implementamos soluciones personalizadas que se adaptan al tono y estilo de comunicación de tu marca, asegurando una experiencia coherente y profesional en cada interacción con tus clientes."
         },
         {
           "title": "Análisis Predictivo",
-          "description": "Modelos de ML para forecasting y toma de decisiones basada en datos."
+          "paragraph1": "Transformamos tus datos históricos en predicciones accionables que te permiten anticiparte a las tendencias del mercado y comportamientos del cliente. Nuestros modelos de machine learning identifican patrones complejos que pasarían desapercibidos con análisis tradicionales.",
+          "features": ["Modelos predictivos personalizados por industria", "Forecasting de ventas y demanda", "Detección temprana de riesgos y oportunidades", "Visualizaciones intuitivas y reportes automáticos"],
+          "paragraph2": "Con nuestra solución de análisis predictivo, tomarás decisiones basadas en datos concretos, reduciendo la incertidumbre y maximizando las oportunidades de crecimiento para tu negocio."
         },
         {
-          "title": "Automatización de Procesos",
-          "description": "Flujos de trabajo inteligentes que reducen carga operativa."
+          "title": "Automatización de Procesos con IA",
+          "paragraph1": "Llevamos la automatización al siguiente nivel combinando RPA tradicional con inteligencia artificial. Nuestros sistemas no solo ejecutan tareas repetitivas, sino que también toman decisiones inteligentes basadas en el contexto de cada situación.",
+          "features": ["Flujos de trabajo autónomos y adaptables", "Procesamiento inteligente de documentos", "Clasificación automática de solicitudes", "Optimización dinámica de recursos operativos"],
+          "paragraph2": "Reduce significativamente los costos operativos mientras mejoras la precisión y velocidad de tus procesos críticos, liberando a tu equipo para enfocarse en actividades de mayor valor estratégico."
         }
       ]
     },
@@ -30,15 +36,21 @@
       "subservices": [
         {
           "title": "RPA (Robotic Process Automation)",
-          "description": "Bots que ejecutan tareas administrativas repetitivas."
+          "paragraph1": "Implementamos bots de software que replican acciones humanas en sistemas digitales, ejecutando tareas administrativas repetitivas con mayor velocidad y cero errores. Desde procesamiento de facturas hasta gestión de inventarios.",
+          "features": ["Automatización de entrada y procesamiento de datos", "Ejecución de transacciones entre sistemas", "Generación automática de reportes", "Monitoreo y alertas en tiempo real"],
+          "paragraph2": "Nuestros bots trabajan incansablemente, permitiendo que tu operación funcione incluso fuera del horario laboral convencional, incrementando la productividad sin aumentar los costos de personal."
         },
         {
           "title": "Integración de Sistemas",
-          "description": "Conexión automatizada entre tus herramientas y plataformas."
+          "paragraph1": "Conectamos todas tus herramientas y plataformas en un ecosistema digital unificado que fluye sin fricciones. Eliminamos los silos de información y automatizamos el intercambio de datos entre aplicaciones.",
+          "features": ["APIs personalizadas para conexión entre sistemas", "Sincronización bidireccional de datos en tiempo real", "Middleware escalable y seguro", "Mapeo y transformación automática de datos"],
+          "paragraph2": "Logra una visión 360° de tu operación al tener todos tus sistemas trabajando en armonía, reduciendo la duplicación de esfuerzos y mejorando la calidad de la información disponible."
         },
         {
           "title": "Workflows Personalizados",
-          "description": "Flujos de trabajo diseñados para tus necesidades específicas."
+          "paragraph1": "Diseñamos flujos de trabajo digitales que reflejan exactamente cómo opera tu negocio, adaptándose a tus procesos únicos en lugar de obligarte a cambiar tu forma de trabajar. Cada paso está optimizado para eficiencia.",
+          "features": ["Diseño centrado en tus procesos específicos", "Aprobaciones y notificaciones automatizadas", "Seguimiento de estado y auditoría completa", "Flexibilidad para modificaciones futuras"],
+          "paragraph2": "Estos workflows no solo automatizan tareas, sino que estandarizan las mejores prácticas de tu organización, asegurando consistencia en la ejecución y facilitando la capacitación de nuevo personal."
         }
       ]
     },
@@ -51,15 +63,21 @@
       "subservices": [
         {
           "title": "Aplicaciones Web Empresariales",
-          "description": "Sistemas escalables construidos con tecnologías modernas."
+          "paragraph1": "Creamos aplicaciones web robustas y escalables diseñadas específicamente para resolver los desafíos únicos de tu empresa. Utilizamos arquitecturas modernas que garantizan rendimiento, seguridad y mantenibilidad a largo plazo.",
+          "features": ["Desarrollo con frameworks de última generación", "Arquitectura modular y escalable", "Interfaces responsivas y accesibles", "Integración nativa con servicios en la nube"],
+          "paragraph2": "Cada línea de código está escrita pensando en tus necesidades específicas, resultando en una herramienta que potencia tus capacidades operativas en lugar de limitarte con funcionalidades genéricas."
         },
         {
           "title": "Software de Gestión Interna",
-          "description": "Herramientas para optimizar operaciones internas."
+          "paragraph1": "Desarrollamos sistemas internos que optimizan tus operaciones diarias, desde gestión de recursos humanos hasta control de producción. Estas herramientas se convierten en el núcleo operativo de tu organización.",
+          "features": ["Módulos configurables según departamento", "Control de accesos y permisos granulares", "Reportes y dashboards personalizados", "Historial completo de actividades y cambios"],
+          "paragraph2": "Al centralizar tus procesos críticos en un sistema diseñado para ti, ganas visibilidad total de la operación, reduces errores humanos y estableces una base sólida para el crecimiento sostenido."
         },
         {
           "title": "APIs y Microservicios",
-          "description": "Arquitecturas flexibles y escalables para tu ecosistema digital."
+          "paragraph1": "Construimos arquitecturas basadas en microservicios que permiten escalar componentes específicos de tu sistema de manera independiente. Cada servicio se comunica mediante APIs bien definidas y documentadas.",
+          "features": ["Diseño RESTful y GraphQL según necesidades", "Contenerización con Docker y orquestación Kubernetes", "Documentación automática de endpoints", "Gestión de versiones y compatibilidad"],
+          "paragraph2": "Esta arquitectura te brinda flexibilidad para evolucionar tu plataforma gradualmente, actualizando o reemplazando servicios individuales sin afectar todo el sistema, reduciendo riesgos y costos de mantenimiento."
         }
       ]
     },
@@ -72,15 +90,21 @@
       "subservices": [
         {
           "title": "Dashboards Interactivos",
-          "description": "Tableros de control en tiempo real con visualizaciones claras."
+          "paragraph1": "Convertimos tus datos en tableros de control visualmente impactantes y fáciles de interpretar. Cada métrica importante está al alcance de un clic, con actualizaciones en tiempo real que reflejan el estado actual de tu negocio.",
+          "features": ["Visualizaciones personalizables por usuario", "Filtros dinámicos y drill-down profundo", "Alertas configurables por umbrales", "Exportación automática de reportes"],
+          "paragraph2": "Toma decisiones informadas con confianza al tener toda la información relevante presentada de manera clara y contextualizada, eliminando la necesidad de consolidar datos manualmente desde múltiples fuentes."
         },
         {
           "title": "Diseño de Bases de Datos",
-          "description": "Estructuras optimizadas para rendimiento y escalabilidad."
+          "paragraph1": "Estructuramos tus datos siguiendo las mejores prácticas de modelado, asegurando integridad, rendimiento y escalabilidad. Consideramos tanto las necesidades actuales como el crecimiento futuro de tu volumen de información.",
+          "features": ["Modelado relacional y NoSQL según caso de uso", "Índices optimizados para consultas frecuentes", "Estrategias de particionamiento y sharding", "Planes de backup y recuperación ante desastres"],
+          "paragraph2": "Una base de datos bien diseñada es el cimiento de cualquier sistema exitoso, permitiendo consultas rápidas incluso con millones de registros y facilitando la incorporación de nuevas funcionalidades sin reestructuraciones costosas."
         },
         {
           "title": "Business Intelligence",
-          "description": "Reportes y analytics para toma de decisiones estratégicas."
+          "paragraph1": "Vamos más allá de los reportes básicos para ofrecer análisis profundos que revelan tendencias, correlaciones y oportunidades ocultas en tus datos. Combinamos herramientas de BI con expertise en tu industria.",
+          "features": ["Análisis comparativo histórico y proyecciones", "Segmentación avanzada de clientes y productos", "KPIs alineados con objetivos estratégicos", "Capacitación para interpretación de insights"],
+          "paragraph2": "Transforma tu cultura organizacional hacia una basada en datos, donde cada decisión se respalda con evidencia concreta y cada miembro del equipo puede acceder a la información que necesita para excelencia en su rol."
         }
       ]
     },
@@ -93,15 +117,21 @@
       "subservices": [
         {
           "title": "Landing Pages de Alto Impacto",
-          "description": "Páginas de aterrizaje diseñadas para maximizar conversiones."
+          "paragraph1": "Diseñamos páginas de aterrizaje enfocadas exclusivamente en convertir visitantes en leads o clientes. Cada elemento está estratégicamente colocado para guiar al usuario hacia la acción deseada.",
+          "features": ["Copywriting persuasivo orientado a conversiones", "Diseño A/B testing para optimización continua", "Formularios integrados y validación en tiempo real", "Analytics avanzado para seguimiento de métricas"],
+          "paragraph2": "Maximiza el retorno de inversión de tus campañas de marketing al proporcionar una experiencia de usuario coherente y convincente que elimina distracciones y enfoca la atención en tu oferta principal."
         },
         {
           "title": "Sitios Corporativos",
-          "description": "Presencia digital profesional que refleja tu marca."
+          "paragraph1": "Creamos presencia digital profesional que refleja la identidad y valores de tu marca. Estos sitios sirven como tu carta de presentación digital, estableciendo credibilidad y confianza desde el primer contacto.",
+          "features": ["Diseño alineado con identidad corporativa", "Secciones informativas estructuradas lógicamente", "Integración con redes sociales y CRM", "Panel de administración para actualizaciones de contenido"],
+          "paragraph2": "Un sitio corporativo bien ejecutado no solo informa sobre tus servicios, sino que comunica profesionalismo, estabilidad y compromiso con la calidad, factores decisivos para clientes potenciales que evalúan sus opciones."
         },
         {
           "title": "Portales Web Avanzados",
-          "description": "Plataformas con funcionalidades personalizadas y gestión de contenido."
+          "paragraph1": "Desarrollamos plataformas web complejas con funcionalidades personalizadas que van más allá de un sitio informativo. Incluyen gestión de usuarios, contenidos dinámicos y transacciones seguras.",
+          "features": ["Sistemas de autenticación y perfiles de usuario", "Gestores de contenido personalizados (CMS)", "Pasarelas de pago integradas y certificadas", "Funcionalidades interactivas bajo demanda"],
+          "paragraph2": "Estos portales se convierten en extensiones digitales de tu operación, permitiendo interacciones profundas con clientes, partners o empleados, y automatizando procesos que anteriormente requerían intervención manual."
         }
       ]
     },
@@ -114,15 +144,21 @@
       "subservices": [
         {
           "title": "Branding e Identidad Visual",
-          "description": "Logotipos, paletas y guías de estilo que definen tu marca."
+          "paragraph1": "Construimos identidades de marca memorables que comunican claramente quién eres y qué te hace único. Desde el logotipo hasta la paleta de colores, cada elemento refleja la esencia de tu negocio.",
+          "features": ["Diseño de logotipo versátil y atemporal", "Paletas de colores estratégicamente seleccionadas", "Tipografías que refuerzan personalidad de marca", "Guías de estilo completas para aplicación consistente"],
+          "paragraph2": "Una identidad visual sólida crea reconocimiento inmediato y diferenciación competitiva, haciendo que tu marca sea inolvidable en la mente de tus clientes y facilitando la expansión a nuevos productos o mercados."
         },
         {
           "title": "Marketing Digital 360°",
-          "description": "Estrategias integradas para todos tus canales digitales."
+          "paragraph1": "Desarrollamos estrategias integrales que cubren todos los canales digitales relevantes para tu audiencia objetivo. Coordinamos esfuerzos para crear una presencia coherente y multiplicar el impacto de cada inversión.",
+          "features": ["Planificación de campañas multicanal", "SEO y SEM para visibilidad en buscadores", "Email marketing automatizado y segmentado", "Análisis de ROI y optimización continua"],
+          "paragraph2": "Con un enfoque 360°, aseguras que tu mensaje llegue a la persona correcta, en el momento adecuado, a través del canal óptimo, maximizando las oportunidades de conversión y construyendo relaciones duraderas."
         },
         {
           "title": "Diseño de Materiales",
-          "description": "Piezas gráficas para web, redes sociales y medios impresos."
+          "paragraph1": "Producimos piezas gráficas de alta calidad para todos tus medios de comunicación, manteniendo consistencia visual y mensajes efectivos. Desde banners digitales hasta material impreso de gran formato.",
+          "features": ["Diseño para redes sociales y publicidad digital", "Material corporativo impreso (tarjetas, brochures)", "Presentaciones profesionales y pitch decks", "Infografías y contenido visual educativo"],
+          "paragraph2": "El diseño profesional eleva la percepción de calidad de tus productos y servicios, transmitiendo atención al detalle y compromiso con la excelencia que inspira confianza en clientes y socios comerciales."
         }
       ]
     },
@@ -130,20 +166,26 @@
       "id": "gestion-de-presencia-digital",
       "name": "Gestión de Presencia Digital y Redes Sociales",
       "slug": "gestion-de-presencia-digital",
-      "description": "Administración profesional de tu presencia online. Creamos contenido estratégico que engagement y construye comunidad.",
+      "description": "Administración profesional de tu presencia online. Creamos contenido estratégico que genera engagement y construye comunidad.",
       "icon": "share",
       "subservices": [
         {
           "title": "Community Management",
-          "description": "Gestión profesional de tus redes sociales con contenido regular."
+          "paragraph1": "Gestionamos activamente tus redes sociales creando conexiones genuinas con tu audiencia. Respondemos comentarios, fomentamos conversaciones y construimos una comunidad comprometida alrededor de tu marca.",
+          "features": ["Publicación regular con calendario editorial", "Respuesta rápida a comentarios y mensajes", "Dinámicas y concursos para aumentar engagement", "Monitoreo de menciones y sentimiento de marca"],
+          "paragraph2": "Una comunidad activa y satisfecha se convierte en embajadora de tu marca, amplificando orgánicamente tus mensajes y proporcionando retroalimentación valiosa para mejorar continuamente tus offerings."
         },
         {
           "title": "Estrategia de Contenidos",
-          "description": "Planificación y creación de contenido relevante para tu audiencia."
+          "paragraph1": "Planificamos y creamos contenido relevante que educa, entretiene y persuade a tu audiencia. Cada pieza de contenido tiene un propósito estratégico alineado con tus objetivos de negocio.",
+          "features": ["Calendario editorial planificado mensualmente", "Contenido diversificado (educativo, promocional, entretenimiento)", "Adaptación de formato por plataforma", "Optimización para algoritmos de cada red social"],
+          "paragraph2": "El contenido estratégico posiciona tu marca como autoridad en tu sector, atrayendo seguidores cualificados que tienen mayor probabilidad de convertirse en clientes leales y defensores de tu marca."
         },
         {
           "title": "Gestión de Reputación Online",
-          "description": "Monitoreo y respuesta para mantener una imagen positiva de marca."
+          "paragraph1": "Protegemos y mejoramos activamente la percepción pública de tu marca en el entorno digital. Monitoreamos constantemente lo que se dice y actuamos rápidamente para abordar cualquier situación negativa.",
+          "features": ["Monitoreo 24/7 de menciones en redes y foros", "Protocolos de respuesta para crisis de reputación", "Estrategias proactivas para generar reseñas positivas", "Informes periódicos de salud de marca online"],
+          "paragraph2": "En la era digital, la reputación online puede hacer o deshacer un negocio. Nuestra gestión proactiva asegura que la narrativa sobre tu marca sea positiva, auténtica y alineada con los valores que representas."
         }
       ]
     },
@@ -156,15 +198,21 @@
       "subservices": [
         {
           "title": "Auditoría Tecnológica",
-          "description": "Evaluación completa de tu infraestructura y recomendaciones de mejora."
+          "paragraph1": "Evaluamos exhaustivamente tu infraestructura tecnológica actual, identificando fortalezas, vulnerabilidades y oportunidades de mejora. Nuestro análisis proporciona una hoja de ruta clara para optimización.",
+          "features": ["Revisión completa de hardware y software", "Evaluación de seguridad y cumplimiento normativo", "Análisis de costos y eficiencia operativa", "Recomendaciones priorizadas con ROI estimado"],
+          "paragraph2": "Con una auditoría profesional, obtienes claridad sobre el estado real de tu tecnología y un plan accionable para modernizar sistemas, reducir costos y prepararte para futuros desafíos competitivos."
         },
         {
           "title": "Soporte Técnico Especializado",
-          "description": "Asistencia remota y presencial para resolver incidencias."
+          "paragraph1": "Proporcionamos asistencia técnica rápida y efectiva para resolver incidencias que podrían detener tu operación. Nuestro equipo de expertos está disponible para atender problemas de diversa complejidad.",
+          "features": ["Soporte remoto con tiempos de respuesta garantizados", "Asistencia presencial para situaciones críticas", "Resolución de problemas de hardware y software", "Seguimiento hasta cierre satisfactorio del ticket"],
+          "paragraph2": "Minimizamos el tiempo de inactividad y el impacto en tu productividad al resolver problemas técnicos eficientemente, permitiéndote concentrarte en hacer crecer tu negocio sin preocupaciones tecnológicas."
         },
         {
           "title": "Capacitación y Training",
-          "description": "Formación para tu equipo en herramientas y tecnologías."
+          "paragraph1": "Empoderamos a tu equipo con el conocimiento necesario para aprovechar al máximo tus herramientas tecnológicas. Diseñamos programas de formación adaptados a diferentes niveles de habilidad.",
+          "features": ["Cursos personalizados por rol y departamento", "Material didáctico y guías de referencia", "Sesiones prácticas con escenarios reales", "Evaluación de aprendizaje y certificación"],
+          "paragraph2": "La capacitación continua reduce la dependencia de soporte externo, aumenta la confianza del personal en el uso de tecnología y maximiza el retorno de inversión en las herramientas que ya posees."
         }
       ]
     }
