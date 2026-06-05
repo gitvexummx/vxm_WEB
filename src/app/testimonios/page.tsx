@@ -1,44 +1,31 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import TestimonialCard from '@/components/ui/TestimonialCard';
 
-const testimonials = [
-  {
-    id: 1,
-    name: 'Carlos Mendoza',
-    role: 'CEO',
-    company: 'TechStart México',
-    content: 'Vexum transformó completamente nuestra presencia digital. Su equipo técnico es excepcional y entendieron perfectamente nuestras necesidades. El resultado superó todas nuestras expectativas.',
-  },
-  {
-    id: 2,
-    name: 'Ana Rodríguez',
-    role: 'Directora de Marketing',
-    company: 'Innovate Corp',
-    content: 'La aplicación móvil que desarrollaron superó todas nuestras expectativas. El proceso fue fluido y el resultado final es impresionante. Definitivamente los recomiendo.',
-  },
-  {
-    id: 3,
-    name: 'Roberto Sánchez',
-    role: 'Fundador',
-    company: 'E-Shop MX',
-    content: 'Gracias a Vexum, nuestras ventas en línea aumentaron un 200%. Su plataforma de e-commerce es robusta y fácil de administrar. El soporte post-lanzamiento ha sido excelente.',
-  },
-  {
-    id: 4,
-    name: 'María González',
-    role: 'CTO',
-    company: 'FinTech Solutions',
-    content: 'La implementación de blockchain que realizaron nos permitió lanzar nuestro producto meses antes de lo planeado. Su experiencia técnica es incomparable.',
-  },
-  {
-    id: 5,
-    name: 'Luis Hernández',
-    role: 'Director de Operaciones',
-    company: 'Logística Pro',
-    content: 'El sistema de gestión en la nube que desarrollaron optimizó nuestros procesos en un 60%. Vexum realmente entiende las necesidades del negocio.',
-  },
-];
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  stars: number;
+  photo?: string;
+}
 
 export default function TestimoniosPage() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    fetch('/data/testimonials.json')
+      .then((res) => res.json())
+      .then((data) => setTestimonials(data.testimonials));
+  }, []);
+
+  if (testimonials.length === 0) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
