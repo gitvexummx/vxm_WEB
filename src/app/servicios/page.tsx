@@ -10,11 +10,11 @@ interface Service {
 }
 
 export default async function ServiciosPage() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/data/services.json`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL || []}/data/services.json`, {
     cache: 'no-store'
   });
   const data = await res.json();
-  const services: Service[] = data.services;
+  const services: Service[] = data.services || [];
 
   return (
     <div className="min-h-screen py-20">
@@ -36,7 +36,7 @@ export default async function ServiciosPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {services.map((service) => (
             <ServiceCard key={service.id} {...service} />
-          ))}
+          ))} 
         </div>
       </div>
     </div>

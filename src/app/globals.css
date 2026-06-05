@@ -8,7 +8,7 @@
 :root {
   /* Colors - Neon Palette (from info.md) */
   --neon-primary: #D946EF;      /* Púrpura */
-  --neon-secondary: #F97316;    /* Naranja rosado */
+  --neon-secondary: #f9168f;    /* Naranja rosado */
   
   /* Dark Backgrounds */
   --dark-900: #05050A;          /* Negro espacial */
@@ -23,7 +23,7 @@
   
   /* Shadows */
   --shadow-neon-primary: 0 0 10px rgba(217, 70, 239, 0.5), 0 0 20px rgba(217, 70, 239, 0.3);
-  --shadow-neon-secondary: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 20px rgba(249, 115, 22, 0.3);
+  --shadow-neon-secondary: 0 0 10px rgba(249, 22, 124, 0.5), 0 0 20px rgba(249, 115, 22, 0.3);
   
   /* Typography - Updated with Space Grotesk + Inter */
   --font-display: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;

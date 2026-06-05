@@ -1,14 +1,24 @@
 {
   "app": {
-    "[project]/src/app/_not-found/page": [
-      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
-      "static/media/0acc7fdf55eb3220-s.p.3oprs0vbfre0x.woff2",
-      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    "[project]/src/app/acerca/page": [
+      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/contacto/page": [
+      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
     ],
     "[project]/src/app/page": [
-      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
-      "static/media/0acc7fdf55eb3220-s.p.3oprs0vbfre0x.woff2",
-      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/servicios/[slug]/page": [
+      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/servicios/page": [
+      "static/media/0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
     ]
   },
   "appUsingSizeAdjust": true,
