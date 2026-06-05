@@ -81,7 +81,7 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          {/* Sidebar con animación slide */}
+          {/* Sidebar con animación slide suave */}
           <div
             className={`navbar-mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}
           >
@@ -188,6 +188,9 @@ export default function Navbar() {
           </div>
         </>
       )}
+
+      {/* Blur overlay para el contenido de la página cuando el sidebar está abierto */}
+      {isMobileMenuOpen && <div className="navbar-page-blur-overlay" />}
     </>
   );
 }
