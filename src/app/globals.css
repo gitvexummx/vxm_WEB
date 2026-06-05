@@ -497,21 +497,8 @@ body {
 .navbar-background {
   position: absolute;
   inset: 0;
-}
-
-@media (min-width: 768px) {
-  .navbar-background {
-    background-color: rgba(10, 10, 15, 0.6);
-  }
-}
-
-@media (max-width: 767px) {
-  .navbar-background {
-    background-color: rgba(10, 10, 15, 0.95);
-  }
-}
-
-.navbar-background {
+  /* Glassy blur con tono ligeramente oscuro - siempre glassy, nunca sólido */
+  background-color: rgba(5, 5, 10, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -2390,55 +2377,29 @@ body {
 
 
 
+/* ============================================
+   VARIABLES ADICIONALES (NO USADAS ACTUALMENTE)
+   Guardadas para posible uso futuro
+   ============================================ */
+/* 
+  --neon-accent: #ffcc00;       /* Amarillo neón - disponible para features futuras */
+  --neon-purple: #b76eff;       /* Púrpura alternativo - disponible para features futuras */
+  --neon-green: #00ff88;        /* Verde neón - disponible para features futuras */
+  --neon-pink: #ff00aa;         /* Rosa alternativo - disponible para features futuras */
+*/
+
+/* Fin de variables CSS adicionales */
+
+/* ============================================
+   VARIABLES DE SOPORTE (USADAS EN COMPONENTES)
+   Estas variables son necesarias para componentes que las referencian
+   ============================================ */
 :root {
-  /* Colores Base */
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --card: #0f0f0f;
-  --card-foreground: #ffffff;
-  --popover: #0f0f0f;
-  --popover-foreground: #ffffff;
-  --primary: #00d4ff;
-  --primary-foreground: #000000;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
-  --muted: #2a2a2a;
-  --muted-foreground: #999999;
-  --accent: #1a1a1a;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #2a2a2a;
-  --input: #2a2a2a;
-  --ring: #00d4ff;
-  --radius: 0.5rem;
-
-  /* Colores Neón */
-  --neon-primary: #00d4ff;
-  --neon-secondary: #ff0080;
-  --neon-accent: #ffcc00;
-  --neon-purple: #b76eff;
-  --neon-green: #00ff88;
-  --neon-pink: #ff00aa;
-
-  /* Gradientes */
-  --gradient-primary: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
-  --gradient-secondary: linear-gradient(135deg, var(--neon-secondary), var(--neon-accent));
-  --gradient-dark: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-
-  /* Sombras */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  /* Sombras estándar */
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-neon: 0 0 10px rgba(0, 212, 255, 0.3), 0 0 20px rgba(0, 212, 255, 0.2), 0 0 40px rgba(0, 212, 255, 0.1);
-
-  /* Tipografía */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --font-mono: 'Fira Code', 'Courier New', monospace;
+  --shadow-neon: 0 0 10px rgba(217, 70, 239, 0.3), 0 0 20px rgba(217, 70, 239, 0.2), 0 0 40px rgba(217, 70, 239, 0.1);
 
   /* Transiciones */
   --transition-all: all 0.3s ease;
@@ -2465,6 +2426,27 @@ body {
   --border-radius-xl: 1rem;
   --border-radius-full: 9999px;
 
+  /* Colores base para compatibilidad con componentes existentes */
+  --background: var(--dark-900);
+  --foreground: #ffffff;
+  --border: rgba(217, 70, 239, 0.1);
+  --primary: var(--neon-primary);
+  --primary-foreground: #000000;
+  --card: var(--dark-800);
+  --card-foreground: #ffffff;
+  --popover: var(--dark-800);
+  --popover-foreground: #ffffff;
+  --secondary: var(--dark-700);
+  --secondary-foreground: #ffffff;
+  --muted: var(--dark-600);
+  --muted-foreground: #a1a1aa;
+  --accent: var(--dark-700);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --input: var(--dark-600);
+  --ring: var(--neon-primary);
+
   /* Breakpoints */
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -2485,7 +2467,7 @@ body {
 
 /* Base Styles */
 * {
-  border-color: hsl(var(--border));
+  border-color: var(--border);
 }
 
 body {
