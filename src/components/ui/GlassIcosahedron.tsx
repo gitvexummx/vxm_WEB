@@ -2,19 +2,23 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
 
 function NeonIcosahedron() {
+  const groupRef = useRef<THREE.Group>(null);
+  
   // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
   const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.5, 0), []);
   
-  // Create glowing edge lines material
+  // Create glowing edge lines material - thicker and more neon
   const lineMaterial = useMemo(
     () => new THREE.LineBasicMaterial({ 
       color: '#D946EF', // neon-primary magenta
       transparent: true,
-      opacity: 0.9,
+      opacity: 1,
+      linewidth: 3,
     }),
     []
   );
@@ -22,34 +26,47 @@ function NeonIcosahedron() {
   // Create edges from geometry
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry), [geometry]);
 
+  // Glassy face material with glassmorphism effect
+  const glassMaterial = useMemo(
+    () => new THREE.MeshPhysicalMaterial({
+      color: '#0a0a1a',
+      transparent: true,
+      opacity: 0.15,
+      roughness: 0.2,
+      metalness: 0.1,
+      clearcoat: 1,
+      clearcoatRoughness: 0.1,
+      transmission: 0.6,
+      thickness: 0.8,
+      side: THREE.DoubleSide,
+      envMapIntensity: 1,
+    }),
+    []
+  );
+
+  // Auto rotation animation
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.x += delta * 0.2;
+      groupRef.current.rotation.y += delta * 0.3;
+    }
+  });
+
   return (
-    <group>
-      {/* Glowing wireframe edges - self illuminated */}
+    <group ref={groupRef}>
+      {/* Glowing wireframe edges - thick neon lines */}
       <lineSegments geometry={edges} material={lineMaterial} />
       
-      {/* Subtle glassy faces for depth */}
-      <mesh geometry={geometry}>
-        <meshPhysicalMaterial
-          color="#0a0a1a"
-          transparent
-          opacity={0.03}
-          roughness={0.1}
-          metalness={0.9}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          transmission={0.3}
-          thickness={0.5}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+      {/* Glassmorphism faces */}
+      <mesh geometry={geometry} material={glassMaterial} />
       
-      {/* Inner glow core */}
+      {/* Inner glow core for extra depth */}
       <mesh>
         <sphereGeometry args={[0.3, 16, 16]} />
         <meshBasicMaterial
           color="#D946EF"
           transparent
-          opacity={0.25}
+          opacity={0.3}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
@@ -74,8 +91,7 @@ export default function GlassIcosahedron() {
           enableZoom={false}
           enablePan={false}
           rotateSpeed={0.5}
-          autoRotate
-          autoRotateSpeed={1}
+          autoRotate={false}
           minDistance={5}
           maxDistance={5}
         />
