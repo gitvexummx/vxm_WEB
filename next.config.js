@@ -41,4 +41,13 @@ const nextConfig = {
   },
 };
 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Configuración vacía para habilitar Turbopack sin errores
+  turbopack: {},
+};
+
+
+module.exports = nextConfig;
+
 export default nextConfig;
