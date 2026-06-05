@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import servicesData from '../../../../public/data/services.json';
 
 interface PageProps {
@@ -21,16 +25,36 @@ interface Service {
   subservices: SubService[];
 }
 
-export default async function ServicioDetallePage({ params }: PageProps) {
-  const { slug } = await params;
-  
-  const service = servicesData.services.find((s: Service) => s.slug === slug);
+export default function ServicioDetallePage({ params }: PageProps) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // Cargar datos en el cliente
+  useEffect(() => {
+    async function loadParams() {
+      const resolvedParams = await params;
+      
+      const foundService = servicesData.services.find((s: Service) => s.slug === resolvedParams.slug);
+      setService(foundService || null);
+      setLoaded(true);
+    }
+    loadParams();
+  }, [params]);
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen py-20 flex items-center justify-center">
+        <div className="text-cyan-400">Cargando...</div>
+      </div>
+    );
+  }
 
   if (!service) {
     return (
       <div className="min-h-screen py-20 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Servicio no encontrado</h1>
+          <h1 className="text-4xl font-bold mb-4 text-white">Servicio no encontrado</h1>
           <Link href="/servicios" className="text-cyan-400 hover:text-cyan-300">
             Volver a servicios
           </Link>
@@ -38,6 +62,10 @@ export default async function ServicioDetallePage({ params }: PageProps) {
       </div>
     );
   }
+
+  const toggleAccordion = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
 
   return (
     <div className="min-h-screen py-20">
@@ -60,41 +88,72 @@ export default async function ServicioDetallePage({ params }: PageProps) {
           </p>
         </div>
 
-        {/* Sub-services Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Sub-services Accordion */}
+        <div className="space-y-4">
           {service.subservices.map((subService: SubService, index: number) => (
             <div
               key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-cyan-500/20 rounded-xl p-6 hover:border-cyan-500/50 transition-colors duration-300"
+              className="bg-slate-800/50 backdrop-blur-sm border border-purple-500/20 rounded-xl overflow-hidden hover:border-purple-500/40 transition-colors duration-300"
             >
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-cyan-400 font-bold">{index + 1}</span>
+              {/* Header - Siempre visible */}
+              <button
+                onClick={() => toggleAccordion(index)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors duration-200"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-purple-400 font-bold">{index + 1}</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold text-white">{subService.title}</h3>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-3">{subService.title}</h3>
-                  
-                  {/* Párrafo 1 */}
-                  <p className="text-gray-400 text-sm mb-3">
-                    {subService.paragraph1}
-                  </p>
-                  
-                  {/* Listado de características */}
-                  <ul className="mb-3 space-y-1">
-                    {subService.features.map((feature: string, featureIndex: number) => (
-                      <li key={featureIndex} className="text-gray-300 text-sm flex items-start">
-                        <span className="text-cyan-400 mr-2">•</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {/* Párrafo 2 */}
-                  <p className="text-gray-400 text-sm">
-                    {subService.paragraph2}
-                  </p>
-                </div>
-              </div>
+                <motion.div
+                  animate={{ rotate: activeIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-purple-400"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.div>
+              </button>
+
+              {/* Contenido desplegable */}
+              <AnimatePresence>
+                {activeIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 pt-2 border-t border-purple-500/10">
+                      {/* Párrafo 1 */}
+                      <p className="text-gray-300 text-base md:text-lg mb-4 leading-relaxed">
+                        {subService.paragraph1}
+                      </p>
+
+                      {/* Listado de características */}
+                      <div className="mb-4">
+                        <h4 className="text-purple-400 font-semibold mb-3 text-base md:text-lg">Características principales:</h4>
+                        <ul className="space-y-2">
+                          {subService.features.map((feature: string, featureIndex: number) => (
+                            <li key={featureIndex} className="text-gray-300 text-sm md:text-base flex items-start">
+                              <span className="text-pink-400 mr-3 mt-1">•</span>
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Párrafo 2 */}
+                      <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+                        {subService.paragraph2}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
