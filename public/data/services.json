@@ -1,0 +1,172 @@
+{
+  "services": [
+    {
+      "id": "servicios-con-ia",
+      "name": "Servicios con IA",
+      "slug": "servicios-con-ia",
+      "description": "Implementación de inteligencia artificial para automatizar procesos, optimizar decisiones y crear experiencias inteligentes que impulsen tu negocio.",
+      "icon": "brain",
+      "subservices": [
+        {
+          "title": "Chatbots Inteligentes",
+          "description": "Asistentes virtuales 24/7 con procesamiento de lenguaje natural."
+        },
+        {
+          "title": "Análisis Predictivo",
+          "description": "Modelos de ML para forecasting y toma de decisiones basada en datos."
+        },
+        {
+          "title": "Automatización de Procesos",
+          "description": "Flujos de trabajo inteligentes que reducen carga operativa."
+        }
+      ]
+    },
+    {
+      "id": "servicios-de-automatizacion",
+      "name": "Servicios de Automatización",
+      "slug": "servicios-de-automatizacion",
+      "description": "Automatizamos tareas repetitivas y procesos complejos para que tu equipo se enfoque en lo que realmente importa: hacer crecer el negocio.",
+      "icon": "cog",
+      "subservices": [
+        {
+          "title": "RPA (Robotic Process Automation)",
+          "description": "Bots que ejecutan tareas administrativas repetitivas."
+        },
+        {
+          "title": "Integración de Sistemas",
+          "description": "Conexión automatizada entre tus herramientas y plataformas."
+        },
+        {
+          "title": "Workflows Personalizados",
+          "description": "Flujos de trabajo diseñados para tus necesidades específicas."
+        }
+      ]
+    },
+    {
+      "id": "sistemas-a-medida",
+      "name": "Sistemas a Medida",
+      "slug": "sistemas-a-medida",
+      "description": "Desarrollamos software personalizado que se adapta perfectamente a tus procesos únicos, sin limitaciones ni compromisos.",
+      "icon": "code",
+      "subservices": [
+        {
+          "title": "Aplicaciones Web Empresariales",
+          "description": "Sistemas escalables construidos con tecnologías modernas."
+        },
+        {
+          "title": "Software de Gestión Interna",
+          "description": "Herramientas para optimizar operaciones internas."
+        },
+        {
+          "title": "APIs y Microservicios",
+          "description": "Arquitecturas flexibles y escalables para tu ecosistema digital."
+        }
+      ]
+    },
+    {
+      "id": "dashboards-y-bases-de-datos",
+      "name": "Dashboards y Bases de Datos",
+      "slug": "dashboards-y-bases-de-datos",
+      "description": "Visualiza y gestiona tus datos de manera inteligente. Transformamos información compleja en insights accionables.",
+      "icon": "chart",
+      "subservices": [
+        {
+          "title": "Dashboards Interactivos",
+          "description": "Tableros de control en tiempo real con visualizaciones claras."
+        },
+        {
+          "title": "Diseño de Bases de Datos",
+          "description": "Estructuras optimizadas para rendimiento y escalabilidad."
+        },
+        {
+          "title": "Business Intelligence",
+          "description": "Reportes y analytics para toma de decisiones estratégicas."
+        }
+      ]
+    },
+    {
+      "id": "paginas-web",
+      "name": "Páginas Web",
+      "slug": "paginas-web",
+      "description": "Sitios web modernos, rápidos y optimizados para convertir visitantes en clientes. Desde landing pages hasta portales corporativos.",
+      "icon": "globe",
+      "subservices": [
+        {
+          "title": "Landing Pages de Alto Impacto",
+          "description": "Páginas de aterrizaje diseñadas para maximizar conversiones."
+        },
+        {
+          "title": "Sitios Corporativos",
+          "description": "Presencia digital profesional que refleja tu marca."
+        },
+        {
+          "title": "Portales Web Avanzados",
+          "description": "Plataformas con funcionalidades personalizadas y gestión de contenido."
+        }
+      ]
+    },
+    {
+      "id": "marketing-y-diseno-grafico",
+      "name": "Marketing y Diseño Gráfico",
+      "slug": "marketing-y-diseno-grafico",
+      "description": "Estrategias de marketing digital y diseño gráfico que conectan con tu audiencia y fortalecen tu identidad de marca.",
+      "icon": "palette",
+      "subservices": [
+        {
+          "title": "Branding e Identidad Visual",
+          "description": "Logotipos, paletas y guías de estilo que definen tu marca."
+        },
+        {
+          "title": "Marketing Digital 360°",
+          "description": "Estrategias integradas para todos tus canales digitales."
+        },
+        {
+          "title": "Diseño de Materiales",
+          "description": "Piezas gráficas para web, redes sociales y medios impresos."
+        }
+      ]
+    },
+    {
+      "id": "gestion-de-presencia-digital",
+      "name": "Gestión de Presencia Digital y Redes Sociales",
+      "slug": "gestion-de-presencia-digital",
+      "description": "Administración profesional de tu presencia online. Creamos contenido estratégico que engagement y construye comunidad.",
+      "icon": "share",
+      "subservices": [
+        {
+          "title": "Community Management",
+          "description": "Gestión profesional de tus redes sociales con contenido regular."
+        },
+        {
+          "title": "Estrategia de Contenidos",
+          "description": "Planificación y creación de contenido relevante para tu audiencia."
+        },
+        {
+          "title": "Gestión de Reputación Online",
+          "description": "Monitoreo y respuesta para mantener una imagen positiva de marca."
+        }
+      ]
+    },
+    {
+      "id": "consultoria-y-soporte-tech",
+      "name": "Consultoría y Soporte Tech",
+      "slug": "consultoria-y-soporte-tech",
+      "description": "Asesoramiento experto en tecnología y soporte continuo para asegurar que tus sistemas siempre estén operando al máximo nivel.",
+      "icon": "support",
+      "subservices": [
+        {
+          "title": "Auditoría Tecnológica",
+          "description": "Evaluación completa de tu infraestructura y recomendaciones de mejora."
+        },
+        {
+          "title": "Soporte Técnico Especializado",
+          "description": "Asistencia remota y presencial para resolver incidencias."
+        },
+        {
+          "title": "Capacitación y Training",
+          "description": "Formación para tu equipo en herramientas y tecnologías."
+        }
+      ]
+    }
+  ]
+}
