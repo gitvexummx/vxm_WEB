@@ -3,5 +3,6 @@
   "/contacto/page": "app/contacto/page.js",
   "/page": "app/page.js",
   "/servicios/[slug]/page": "app/servicios/[slug]/page.js",
-  "/servicios/page": "app/servicios/page.js"
+  "/servicios/page": "app/servicios/page.js",
+  "/testimonios/page": "app/testimonios/page.js"
 }
