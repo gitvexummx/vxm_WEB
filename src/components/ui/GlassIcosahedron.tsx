@@ -2,13 +2,12 @@
 
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useMemo, useRef, useEffect, useState } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 
 function NeonIcosahedron() {
   const groupRef = useRef<THREE.Group>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { camera } = useThree();
   
   // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
@@ -40,47 +39,12 @@ function NeonIcosahedron() {
     []
   );
 
-  // Track mouse position for parallax effect
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      // Normalize mouse position to -1 to 1 range
-      const x = (event.clientX / window.innerWidth) * 2 - 1;
-      const y = -(event.clientY / window.innerHeight) * 2 + 1;
-      setMousePosition({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // Auto rotation animation with smooth parallax based on mouse position
+  // Auto rotation animation
   useFrame((state, delta) => {
     if (groupRef.current) {
       // Base auto rotation
       groupRef.current.rotation.x += delta * 0.15;
       groupRef.current.rotation.y += delta * 0.2;
-      
-      // Smooth parallax effect based on mouse position (subtle)
-      const parallaxX = mousePosition.x * 0.3;
-      const parallaxY = mousePosition.y * 0.3;
-      
-      // Lerp for smooth transition
-      groupRef.current.rotation.x += THREE.MathUtils.lerp(
-        groupRef.current.rotation.x % (Math.PI * 2),
-        groupRef.current.rotation.x + parallaxY,
-        delta * 2
-      ) * delta;
-      
-      groupRef.current.rotation.y += THREE.MathUtils.lerp(
-        groupRef.current.rotation.y % (Math.PI * 2),
-        groupRef.current.rotation.y + parallaxX,
-        delta * 2
-      ) * delta;
-      
-      // Subtle camera movement for depth
-      camera.position.x = THREE.MathUtils.lerp(camera.position.x, mousePosition.x * 0.5, delta * 2);
-      camera.position.y = THREE.MathUtils.lerp(camera.position.y, mousePosition.y * 0.5, delta * 2);
-      camera.lookAt(0, 0, 0);
     }
   });
 
