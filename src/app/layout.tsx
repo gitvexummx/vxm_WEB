@@ -4,8 +4,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Vexum - Soluciones Digitales Innovadoras",
-  description: "Transformamos ideas en soluciones digitales innovadoras. Especialistas en desarrollo web, aplicaciones móviles y tecnologías emergentes.",
+  title: "Vexum MX - Ingeniería Digital para Negocios de Éxito",
+  description: "La tecnología que tu negocio necesita. Desarrollamos soluciones inteligentes para negocios en crecimiento que buscan liderar e innovar.",
 };
 
 export default function RootLayout({

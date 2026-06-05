@@ -1,8 +1,19 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import ServiceCarousel from '@/components/ui/ServiceCarousel';
 import TestimonialCard from '@/components/ui/TestimonialCard';
+
+// Dynamic import for 3D component with SSR disabled
+const GlassIcosahedron = dynamic(() => import('@/components/ui/GlassIcosahedron'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[500px] md:h-[600px] bg-slate-900/30 rounded-xl flex items-center justify-center border border-cyan-500/20">
+      <div className="text-gray-400">Cargando elemento 3D...</div>
+    </div>
+  ),
+});
 
 const services = [
   {
@@ -122,39 +133,49 @@ const testimonials = [
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with Glass Icosahedron */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Transformamos Ideas
-            </span>
-            <br />
-            <span className="text-white">en Realidad Digital</span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Desarrollamos soluciones tecnológicas innovadoras que impulsan el crecimiento de tu negocio en la era digital.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/contacto"
-              className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg font-semibold text-white hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-cyan-500/25"
-            >
-              Comienza tu Proyecto
-            </Link>
-            <Link
-              href="/servicios"
-              className="px-8 py-4 bg-slate-800/50 backdrop-blur-sm border border-cyan-500/30 rounded-lg font-semibold text-white hover:bg-slate-700/50 hover:border-cyan-500/50 transition-all duration-300"
-            >
-              Conoce Nuestros Servicios
-            </Link>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Text Content */}
+            <div className="text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  Ingeniería Digital
+                </span>
+                <br />
+                <span className="text-white">para Negocios de Éxito</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-gray-300 mb-8">
+                La tecnología que tu negocio necesita. Desarrollamos soluciones innovadoras que impulsan tu crecimiento en la era digital.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Link
+                  href="/contacto"
+                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg font-semibold text-white hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-cyan-500/25"
+                >
+                  Comienza tu Proyecto
+                </Link>
+                <Link
+                  href="/servicios"
+                  className="px-8 py-4 bg-slate-800/50 backdrop-blur-sm border border-cyan-500/30 rounded-lg font-semibold text-white hover:bg-slate-700/50 hover:border-cyan-500/50 transition-all duration-300"
+                >
+                  Conoce Nuestros Servicios
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column - Glass Icosahedron 3D */}
+            <div className="relative h-[400px] md:h-[500px]">
+              <GlassIcosahedron />
+            </div>
           </div>
         </div>
       </section>
