@@ -15,6 +15,7 @@ venv/
 .env
 .env.local
 .env.*
+.next/
 
 # Logs and temp files
 *.log

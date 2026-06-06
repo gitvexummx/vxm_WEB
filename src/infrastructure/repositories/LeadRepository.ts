@@ -5,7 +5,7 @@ import type { Database } from '../supabase/types';
 
 export class SupabaseLeadRepository implements ILeadRepository {
   async create(lead: Lead): Promise<string> {
-    const leadData: Database['public']['Tables']['audit_logs']['Insert'] = {
+    const leadData: Database['public']['Tables']['audit_logs']['insert'] = {
       nombre_empresa: lead.nombre_empresa,
       correo: lead.correo,
       telefono: lead.telefono,
@@ -19,7 +19,7 @@ export class SupabaseLeadRepository implements ILeadRepository {
 
     const { data, error } = await supabase
       .from('audit_logs')
-      .insert([leadData])
+      await supabase.from('audit_logs').insert(leadData)
       .select('id')
       .single();
 
