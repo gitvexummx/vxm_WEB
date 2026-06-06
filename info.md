@@ -167,3 +167,4 @@ etc.
 3. Respeta la Arquitectura Hexagonal: Los componentes de UI (`presentation`) NUNCA deben hacer fetch o llamar a Supabase directamente. Deben usar hooks de la capa `application` que a su vez usan los repositorios de `infrastructure`.
 4. Asegura que todas las clases de Tailwind cumplan con el Design System (colores neón, glassmorphism, responsive).
 5. Prioriza el rendimiento: Usa `next/dynamic` con `ssr: false` para el componente 3D. Usa `next/image` para el logo.
+
