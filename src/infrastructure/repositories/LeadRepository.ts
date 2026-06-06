@@ -40,7 +40,7 @@ export class SupabaseLeadRepository implements ILeadRepository {
       throw new Error('No se pudo guardar el lead. Intente más tarde.');
     }
 
-    if (!data || !data.id) {
+    if (!data || typeof data.id !== 'string') {
       throw new Error('No se pudo obtener el ID del lead creado.');
     }
 
