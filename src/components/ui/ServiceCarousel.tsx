@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, JSX } from 'react';
 import gsap from 'gsap';
 
 interface Service {
@@ -168,11 +168,15 @@ export default function ServiceCarousel({
   
   // Touch events
   const handleTouchStart = (e: React.TouchEvent) => {
-    handleDragStart(e.touches[0].clientX);
+    if (e.touches[0]) {
+      handleDragStart(e.touches[0].clientX);
+    }
   };
   
   const handleTouchMove = (e: React.TouchEvent) => {
-    handleDragMove(e.touches[0].clientX);
+    if (e.touches[0]) {
+      handleDragMove(e.touches[0].clientX);
+    }
   };
   
   const handleTouchEnd = () => {

@@ -20,9 +20,11 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [/*isHovering, */setIsHovering] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  
+  const [isHovering, setIsHovering] = useState(false);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+
+  isHovering
+
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
     setCurrentIndex(index);
