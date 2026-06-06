@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -12,7 +12,7 @@ interface ToastProps {
   onClose: () => void;
 }
 
-export const Toast: React.FC<ToastProps> = ({
+export const Toast: (props: ToastProps) => JSX.Element = ({
   message,
   type = 'info',
   duration = 5000,

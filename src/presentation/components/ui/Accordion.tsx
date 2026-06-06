@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface AccordionItem {
   id: string;
@@ -13,7 +13,7 @@ interface AccordionProps {
   allowMultiple?: boolean;
 }
 
-export const Accordion: React.FC<AccordionProps> = ({
+export const Accordion: (props: AccordionProps) => JSX.Element = ({
   items,
   allowMultiple = false,
 }) => {

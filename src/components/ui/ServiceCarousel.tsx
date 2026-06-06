@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 
 interface Service {
@@ -24,22 +23,32 @@ export default function ServiceCarousel({
   autoPlayInterval = 3000 
 }: ServiceCarouselProps) {
   const [isHovering, setIsHovering] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const CARD_WIDTH_PERCENT = 100; // Porcentaje relativo al contenedor para compatibilidad universal
+  const startXRef = useRef<number>(0);
+  const currentXRef = useRef<number>(0);
+  const velocityRef = useRef<number>(0);
+  const lastXRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
+  const animationFrameRef = useRef<number | null>(null);
+  const gsapContextRef = useRef<gsap.Context | null>(null);
+  
+  const CARD_WIDTH_PERCENT = 100;
   const DUPLICATE_COUNT = 2;
   
   const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
   
   // GSAP animation for smooth 60fps infinite scroll
   useEffect(() => {
-    if (!autoPlay || isHovering || !trackRef.current) return;
+    if (!autoPlay || isHovering || isDragging || !trackRef.current) return;
     
-    // Calcular duración basada en cantidad de elementos para velocidad constante
     const duration = (services.length * autoPlayInterval) / 1000;
     
-    const ctx = gsap.context(() => {
-      gsap.to(trackRef.current, {
+    gsapContextRef.current = gsap.context(() => {
+      const track = trackRef.current!;
+      
+      gsap.to(track, {
         xPercent: -100,
         duration: duration,
         ease: 'none',
@@ -47,9 +56,8 @@ export default function ServiceCarousel({
         force3D: true,
         modifiers: {
           xPercent: (x: number) => {
-            // Reset instantáneo al llegar a -100% para loop perfecto
             if (x <= -100) {
-              gsap.set(trackRef.current, { xPercent: 0 });
+              gsap.set(track, { xPercent: 0 });
               return 0;
             }
             return x;
@@ -58,15 +66,135 @@ export default function ServiceCarousel({
       });
     }, carouselRef);
     
-    return () => ctx.revert();
-  }, [autoPlay, isHovering, services.length, autoPlayInterval]);
+    return () => {
+      if (gsapContextRef.current) {
+        gsapContextRef.current.revert();
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
+  
+  // Drag functionality
+  const handleDragStart = useCallback((clientX: number) => {
+    setIsDragging(true);
+    startXRef.current = clientX;
+    lastXRef.current = clientX;
+    lastTimeRef.current = Date.now();
+    velocityRef.current = 0;
+    
+    if (gsapContextRef.current) {
+      gsapContextRef.current.revert();
+    }
+    
+    if (trackRef.current) {
+      const currentTransform = gsap.getProperty(trackRef.current, 'xPercent');
+      currentXRef.current = parseFloat(currentTransform as string) || 0;
+    }
+  }, []);
+  
+  const handleDragMove = useCallback((clientX: number) => {
+    if (!isDragging || !trackRef.current) return;
+    
+    const deltaX = clientX - startXRef.current;
+    const currentTime = Date.now();
+    const deltaTime = currentTime - lastTimeRef.current;
+    
+    if (deltaTime > 0) {
+      velocityRef.current = (clientX - lastXRef.current) / deltaTime;
+    }
+    
+    lastXRef.current = clientX;
+    lastTimeRef.current = currentTime;
+    
+    const movePercent = (deltaX / trackRef.current.offsetWidth) * 100;
+    const newX = currentXRef.current + movePercent;
+    
+    gsap.set(trackRef.current, { xPercent: newX });
+  }, [isDragging]);
+  
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging || !trackRef.current) return;
+    
+    setIsDragging(false);
+    
+    const velocity = velocityRef.current;
+    const currentX = gsap.getProperty(trackRef.current!, 'xPercent') as number;
+    
+    // Normalize xPercent to be within [0, -100] range for seamless loop
+    let normalizedX = currentX % -100;
+    if (normalizedX > 0) normalizedX += -100;
+    
+    gsap.set(trackRef.current, { xPercent: normalizedX });
+    
+    // Apply momentum based on drag velocity
+    if (Math.abs(velocity) > 0.1) {
+      const momentumDuration = Math.min(Math.abs(velocity) * 0.5, 2);
+      const targetX = normalizedX + (velocity * 50);
+      
+      gsap.to(trackRef.current, {
+        xPercent: targetX,
+        duration: momentumDuration,
+        ease: 'power2.out',
+        force3D: true,
+        onComplete: () => {
+          if (!isHovering && autoPlay) {
+            // Restart autoplay after momentum ends
+          }
+        }
+      });
+    }
+  }, [isDragging, isHovering, autoPlay]);
+  
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    handleDragStart(e.clientX);
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleDragMove(e.clientX);
+  };
+  
+  const handleMouseUp = () => {
+    handleDragEnd();
+  };
+  
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleDragEnd();
+    }
+  };
+  
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientX);
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleDragMove(e.touches[0].clientX);
+  };
+  
+  const handleTouchEnd = () => {
+    handleDragEnd();
+  };
 
   return (
     <div 
       ref={carouselRef}
-      className="relative overflow-hidden py-12 service-carousel-container"
+      className="relative overflow-hidden py-12 service-carousel-container select-none"
       onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseLeave={() => {
+        setIsHovering(false);
+        handleMouseLeave();
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
       <div
         ref={trackRef}
@@ -74,22 +202,18 @@ export default function ServiceCarousel({
         style={{ 
           willChange: 'transform',
           backfaceVisibility: 'hidden',
-          transform: 'translateZ(0)'
+          transform: 'translateZ(0)',
+          userSelect: 'none'
         }}
       >
         {displayServices.map((service, index) => (
-          <motion.div
+          <div
             key={`${service.id}-${index}`}
             className="flex-shrink-0 w-80 mx-4"
-            initial={false}
-            whileHover={{ 
-              scale: 1.03,
-              transition: { duration: 0.2 }
-            }}
-            whileTap={{ scale: 0.95 }}
+            style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
           >
             <a href={`/servicios/${service.slug}`} className="block">
-              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group cursor-pointer relative service-carousel-card">
+              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
                 <div className="w-12 h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
                   {getIcon(service.icon)}
                 </div>
@@ -97,7 +221,7 @@ export default function ServiceCarousel({
                 <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
               </div>
             </a>
-          </motion.div>
+          </div>
         ))}
       </div>
       
