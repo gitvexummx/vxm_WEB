@@ -20,8 +20,8 @@ export class SupabaseLeadRepository implements ILeadRepository {
     };
 
     const { data, error } = await supabase
-      .from(this.tableName)
-      .insert([leadData])
+      .from('audit_logs')
+      .insert([leadData] satisfies AuditLogInsert[])
       .select('id')
       .single();
 
