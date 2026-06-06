@@ -34,7 +34,7 @@ export default function ServiceCarousel({
   const animationFrameRef = useRef<number | null>(null);
   const gsapContextRef = useRef<gsap.Context | null>(null);
   
-  const CARD_WIDTH_PERCENT = 100;
+  //const CARD_WIDTH_PERCENT = 100;
   const DUPLICATE_COUNT = 2;
   
   const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
