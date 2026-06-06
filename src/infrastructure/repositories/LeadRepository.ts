@@ -4,7 +4,7 @@ import type { Lead } from '@core/entities/Lead';
 import type { AuditLogInsert } from '../supabase/types';
 
 export class SupabaseLeadRepository implements ILeadRepository {
-  private readonly tableName = 'audit_logs';
+  //private readonly tableName = 'audit_logs';
 
   async create(lead: Lead): Promise<string> {
     const leadData: AuditLogInsert = {
