@@ -1,13 +1,11 @@
 import { supabase } from '../supabase/client';
 import type { ILeadRepository } from '@core/ports/ILeadRepository';
 import type { Lead } from '@core/entities/Lead';
-import type { AuditLogInsert } from '../supabase/types';
+import type { Database } from '../supabase/types';
 
 export class SupabaseLeadRepository implements ILeadRepository {
-  //private readonly tableName = 'audit_logs';
-
   async create(lead: Lead): Promise<string> {
-    const leadData: AuditLogInsert = {
+    const leadData: Database['public']['Tables']['audit_logs']['Insert'] = {
       nombre_empresa: lead.nombre_empresa,
       correo: lead.correo,
       telefono: lead.telefono,
@@ -21,7 +19,7 @@ export class SupabaseLeadRepository implements ILeadRepository {
 
     const { data, error } = await supabase
       .from('audit_logs')
-      .insert(leadData as unknown as AuditLogInsert)
+      .insert([leadData])
       .select('id')
       .single();
 
