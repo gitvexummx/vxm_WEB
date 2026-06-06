@@ -11,7 +11,7 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({
-  id,
+  //id,
   name,
   slug,
   description,
