@@ -39,7 +39,9 @@ function NeonIcosahedron() {
   );
 
   // Mouse parallax rotation
-  useFrame((delta) => {
+  useFrame((state, delta) => {
+    state
+
     if (groupRef.current) {
       // Base auto rotation
       groupRef.current.rotation.x += delta * 0.1;
