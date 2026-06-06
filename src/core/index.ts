@@ -1,5 +1,5 @@
 // Core Entities
-export { Lead, type LeadProps, type LeadStatus } from './entities/Lead';
+export { Lead, type LeadProps } from './entities/Lead';
 
 // Core Ports
-export { ILeadRepository } from './ports/ILeadRepository';
+export { type ILeadRepository } from './ports/ILeadRepository';

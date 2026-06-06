@@ -22,7 +22,7 @@ export interface LeadProps {
 }
 
 export class Lead {
-  private readonly _id?: string;
+  private readonly _id: string | undefined;
   private readonly _nombre_empresa: string;
   private readonly _correo: string;
   private readonly _telefono: string;
@@ -141,7 +141,7 @@ export class Lead {
   // Convertir a objeto plano para persistencia
   toObject(): LeadProps {
     return {
-      id: this._id,
+      ...(this._id !== undefined && { id: this._id }),
       nombre_empresa: this._nombre_empresa,
       correo: this._correo,
       telefono: this._telefono,
