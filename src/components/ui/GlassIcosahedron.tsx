@@ -8,7 +8,7 @@ import * as THREE from 'three';
 function NeonIcosahedron() {
   const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const { camera, mouse } = useThree();
+  const { mouse } = useThree();
   
   // Icosahedron geometry: radius 1.5, detail 0 (true icosahedron with 20 faces)
   const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.5, 0), []);
