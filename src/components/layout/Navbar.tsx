@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar fijo con glassmorphism - 72px height */}
-      <nav className="navbar">
+      <nav className={`navbar ${isMobileMenuOpen ? 'mobile-sidebar-active' : ''}`}>
         {/* Contenido de la navbar */}
         <div className="navbar-content">
           <div className="navbar-inner">
