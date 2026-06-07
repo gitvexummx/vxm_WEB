@@ -125,16 +125,24 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
 
       <div className="testimonial-carousel-stage">
         {testimonials.map((testimonial, idx) => {
-          const offset = (idx - currentIndex + testimonials.length) % testimonials.length;
-          const position = offset - Math.floor(testimonials.length / 2);
-          const absPosition = Math.abs(position);
+          // Calculate relative position for infinite sliding effect
+          let offset = idx - currentIndex;
+          
+          // Handle wraparound for infinite loop
+          if (offset < -Math.floor(testimonials.length / 2)) {
+            offset += testimonials.length;
+          } else if (offset > Math.floor(testimonials.length / 2)) {
+            offset -= testimonials.length;
+          }
+          
+          const absOffset = Math.abs(offset);
           
           // Calculate smooth scale and translateX with depth effect
-          const scale = Math.max(0.85, 1.1 - absPosition * 0.25);
-          const translateX = position * 320;
-          const translateZ = -absPosition * 100;
-          const rotateY = position * 15;
-          const opacity = Math.max(0.4, 1 - absPosition * 0.3);
+          const scale = Math.max(0.85, 1.1 - absOffset * 0.25);
+          const translateX = offset * 320;
+          const translateZ = -absOffset * 100;
+          const rotateY = offset * 15;
+          const opacity = Math.max(0.4, 1 - absOffset * 0.3);
           
           return (
             <div
@@ -143,14 +151,14 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
               style={{
                 opacity,
                 transform: `scale(${scale}) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`,
-                zIndex: 20 - Math.abs(position),
+                zIndex: 20 - Math.abs(offset),
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
                 transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                 transformStyle: 'preserve-3d'
               }}
             >
-              <TestimonialCard {...testimonial} isCenter={Math.abs(position) < 0.5} />
+              <TestimonialCard {...testimonial} isCenter={Math.abs(offset) < 0.5} />
             </div>
           );
         })}
