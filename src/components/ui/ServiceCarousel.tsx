@@ -66,114 +66,191 @@ function getIcon(iconName: string) {
 
 export default function ServiceCarousel({ services }: ServiceCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionProgress, setTransitionProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [lastX, setLastX] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
 
   const cardWidth = 320; // w-80
   const gap = 16; // gap-4
   const totalCards = services.length;
   const slideSize = cardWidth + gap;
 
-  // Auto-scroll infinito
+  // Easing function para animaciones suaves
+  const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+  const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
+
+  // Auto-scroll infinito con pausa al interactuar
   useEffect(() => {
-    if (isTransitioning) return;
+    if (!autoPlay || isDragging) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const next = (prev + 1) % totalCards;
-        return next;
-      });
-    }, 3000);
+      setCurrentIndex((prev) => (prev + 1) % totalCards);
+    }, 3500);
 
     return () => clearInterval(interval);
-  }, [totalCards, isTransitioning]);
+  }, [totalCards, autoPlay, isDragging]);
 
-  const handleNext = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setTransitionProgress(0);
-    
-    setCurrentIndex((prev) => {
-      const next = (prev + 1) % totalCards;
-      return next;
-    });
+  // Pausar auto-play al pasar el mouse
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Animación de progreso
-    const startTime = Date.now();
-    const duration = 400;
+    const handleEnter = () => setAutoPlay(false);
+    const handleLeave = () => {
+      setAutoPlay(true);
+      setDragOffset(0);
+    };
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
+    container.addEventListener('mouseenter', handleEnter);
+    container.addEventListener('mouseleave', handleLeave);
+
+    return () => {
+      container.removeEventListener('mouseenter', handleEnter);
+      container.removeEventListener('mouseleave', handleLeave);
+    };
+  }, []);
+
+  // Función para animar el desplazamiento
+  const animateToPosition = useCallback((targetIndex: number, duration = 400) => {
+    const startIndex = currentIndex;
+    const startTime = performance.now();
+    const startOffset = dragOffset;
+    const targetOffset = 0;
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
-      
-      setTransitionProgress(eased);
+      const eased = easeOutQuart(progress);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        setIsTransitioning(false);
-        setTransitionProgress(0);
+        setCurrentIndex(targetIndex);
+        setDragOffset(0);
+        setVelocity(0);
       }
     };
 
     requestAnimationFrame(animate);
-  }, [totalCards, isTransitioning]);
+  }, [currentIndex, dragOffset]);
+
+  // Snap to nearest card después del drag
+  const snapToNearest = useCallback(() => {
+    const totalDrag = dragOffset;
+    const threshold = slideSize * 0.2;
+
+    // Determinar dirección basada en el offset y velocidad
+    let newIndex = currentIndex;
+    
+    if (Math.abs(totalDrag) > threshold || Math.abs(velocity) > 5) {
+      if (totalDrag > 0 || velocity > 0) {
+        newIndex = (currentIndex - 1 + totalCards) % totalCards;
+      } else if (totalDrag < 0 || velocity < 0) {
+        newIndex = (currentIndex + 1) % totalCards;
+      }
+    }
+
+    animateToPosition(newIndex);
+  }, [dragOffset, currentIndex, totalCards, velocity, slideSize, animateToPosition]);
+
+  // Handlers para drag nativo
+  const handleDragStart = useCallback((clientX: number) => {
+    setIsDragging(true);
+    setStartX(clientX);
+    setLastX(clientX);
+    setVelocity(0);
+    setAutoPlay(false);
+  }, []);
+
+  const handleDragMove = useCallback((clientX: number) => {
+    if (!isDragging) return;
+
+    const delta = clientX - lastX;
+    const newOffset = dragOffset + delta;
+
+    // Limitar el arrastre para evitar scroll infinito
+    const maxDrag = slideSize * 1.5;
+    const clampedOffset = Math.max(-maxDrag, Math.min(maxDrag, newOffset));
+    
+    setDragOffset(clampedOffset);
+    setVelocity(delta);
+    setLastX(clientX);
+  }, [isDragging, dragOffset, lastX, slideSize]);
+
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    snapToNearest();
+  }, [isDragging, snapToNearest]);
+
+  // Mouse events
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    handleDragStart(e.clientX);
+  }, [handleDragStart]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    handleDragMove(e.clientX);
+  }, [handleDragMove]);
+
+  const handleMouseUp = useCallback(() => {
+    handleDragEnd();
+  }, [handleDragEnd]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (isDragging) {
+      handleDragEnd();
+    }
+  }, [isDragging, handleDragEnd]);
+
+  // Touch events
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientX);
+  }, [handleDragStart]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    handleDragMove(e.touches[0].clientX);
+  }, [handleDragMove]);
+
+  const handleTouchEnd = useCallback(() => {
+    handleDragEnd();
+  }, [handleDragEnd]);
+
+  // Navegación con botones
+  const handleNext = useCallback(() => {
+    if (isDragging) return;
+    setCurrentIndex((prev) => (prev + 1) % totalCards);
+  }, [isDragging, totalCards]);
 
   const handlePrev = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setTransitionProgress(0);
-
-    setCurrentIndex((prev) => {
-      const next = (prev - 1 + totalCards) % totalCards;
-      return next;
-    });
-
-    const startTime = Date.now();
-    const duration = 400;
-
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      
-      setTransitionProgress(eased);
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setIsTransitioning(false);
-        setTransitionProgress(0);
-      }
-    };
-
-    requestAnimationFrame(animate);
-  }, [totalCards, isTransitioning]);
+    if (isDragging) return;
+    setCurrentIndex((prev) => (prev - 1 + totalCards) % totalCards);
+  }, [isDragging, totalCards]);
 
   // Calcular el desplazamiento del track
   const getTrackOffset = () => {
     const baseOffset = -currentIndex * slideSize;
-    const transitionOffset = isTransitioning ? -slideSize * transitionProgress : 0;
-    return baseOffset + transitionOffset;
+    const dragEffect = isDragging ? dragOffset : 0;
+    return baseOffset + dragEffect;
   };
 
-  // Crear array extendido para loop infinito
-  const extendedServices = [
-    ...services,
-    ...services,
-    ...services,
-  ];
-
+  // Crear array extendido para loop infinito visual
+  const extendedServices = [...services, ...services, ...services];
   const displayStartIndex = currentIndex;
 
   return (
-    <div className="relative w-full overflow-hidden py-12">
+    <div 
+      ref={containerRef}
+      className="relative w-full overflow-hidden py-12 select-none"
+    >
       {/* Navigation buttons */}
       <button
         onClick={handlePrev}
-        disabled={isTransitioning}
+        disabled={isDragging}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full glass-medium border border-neon-primary/30 flex items-center justify-center text-white hover:bg-neon-primary/20 hover:border-neon-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Previous services"
       >
@@ -184,7 +261,7 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
 
       <button
         onClick={handleNext}
-        disabled={isTransitioning}
+        disabled={isDragging}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full glass-medium border border-neon-primary/30 flex items-center justify-center text-white hover:bg-neon-primary/20 hover:border-neon-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Next services"
       >
@@ -196,15 +273,21 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
       {/* Draggable Track */}
       <div
         ref={trackRef}
-        className="flex gap-4"
+        className="flex gap-4 cursor-grab active:cursor-grabbing"
         style={{
           transform: `translateX(${getTrackOffset()}px)`,
-          transition: isTransitioning ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           willChange: 'transform',
         }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {extendedServices.map((service, idx) => {
-          //const actualIndex = idx % totalCards;
           return (
             <div
               key={`${service.id}-${idx}`}

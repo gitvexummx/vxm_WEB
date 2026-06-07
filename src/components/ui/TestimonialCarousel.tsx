@@ -20,53 +20,99 @@ interface TestimonialCarouselProps {
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  const DURATION = 600; // ms
+  const DURATION = 700; // ms
+  const totalTestimonials = testimonials.length;
+
+  // Easing functions para animaciones suaves
+  const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+  const easeInOutQuart = (t: number): number => 
+    t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+
+  // Auto-rotación con pausa al interactuar
+  useEffect(() => {
+    if (!autoPlay || isAnimating) return;
+    
+    const interval = setInterval(() => {
+      handleNext();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, isAnimating, currentIndex]);
+
+  // Pausar auto-play al pasar el mouse
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleEnter = () => setAutoPlay(false);
+    const handleLeave = () => setAutoPlay(true);
+
+    container.addEventListener('mouseenter', handleEnter);
+    container.addEventListener('mouseleave', handleLeave);
+
+    return () => {
+      container.removeEventListener('mouseenter', handleEnter);
+      container.removeEventListener('mouseleave', handleLeave);
+    };
+  }, []);
 
   const goToIndex = useCallback((index: number) => {
     if (isAnimating) return;
     
+    const diff = index - currentIndex;
+    if (diff === 0) return;
+    
+    setDirection(diff > 0 ? 1 : -1);
     setIsAnimating(true);
     setCurrentIndex(index);
     
     setTimeout(() => {
       setIsAnimating(false);
+      setDirection(0);
     }, DURATION);
-  }, [isAnimating]);
+  }, [isAnimating, currentIndex]);
 
   const goNext = useCallback(() => {
     if (isAnimating) return;
     
+    setDirection(1);
     setIsAnimating(true);
-    setCurrentIndex((prev) => {
-      const next = (prev + 1) % testimonials.length;
-      return next;
-    });
+    setCurrentIndex((prev) => (prev + 1) % totalTestimonials);
     
     setTimeout(() => {
       setIsAnimating(false);
+      setDirection(0);
     }, DURATION);
-  }, [isAnimating, testimonials.length]);
+  }, [isAnimating, totalTestimonials]);
 
   const goPrev = useCallback(() => {
     if (isAnimating) return;
     
+    setDirection(-1);
     setIsAnimating(true);
-    setCurrentIndex((prev) => {
-      const next = (prev - 1 + testimonials.length) % testimonials.length;
-      return next;
-    });
+    setCurrentIndex((prev) => (prev - 1 + totalTestimonials) % totalTestimonials);
     
     setTimeout(() => {
       setIsAnimating(false);
+      setDirection(0);
     }, DURATION);
-  }, [isAnimating, testimonials.length]);
+  }, [isAnimating, totalTestimonials]);
+
+  const handleNext = goNext;
+  const handlePrev = goPrev;
 
   return (
-    <div className="testimonial-carousel-wrapper">
+    <div 
+      ref={containerRef}
+      className="testimonial-carousel-wrapper"
+    >
       {/* Navigation arrows */}
       <button
-        onClick={goPrev}
+        onClick={handlePrev}
         className="testimonial-nav-button left"
         aria-label="Previous testimonial"
         disabled={isAnimating}
@@ -93,17 +139,33 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           let offset = idx - currentIndex;
           
           // Ajustar para loop infinito
-          if (offset > testimonials.length / 2) offset -= testimonials.length;
-          if (offset < -testimonials.length / 2) offset += testimonials.length;
+          if (offset > totalTestimonials / 2) offset -= totalTestimonials;
+          if (offset < -totalTestimonials / 2) offset += totalTestimonials;
           
           const absOffset = Math.abs(offset);
           
-          // Calcular transformaciones 3D smooth
-          const scale = Math.max(0.85, 1.1 - absOffset * 0.25);
-          const translateX = offset * 320;
-          const translateZ = -absOffset * 100;
-          const rotateY = offset * 15;
-          const opacity = Math.max(0.4, 1 - absOffset * 0.3);
+          // Calcular transformaciones 3D smooth con animación de entrada/salida
+          const isActive = absOffset < 0.5;
+          const isInTransition = direction !== 0 && absOffset <= 1;
+          
+          // Scale con transición suave
+          const baseScale = 1.1 - absOffset * 0.25;
+          const scale = Math.max(0.82, baseScale);
+          
+          // TranslateX con spacing dinámico
+          const translateX = offset * 340;
+          
+          // TranslateZ para profundidad
+          const translateZ = -absOffset * 120;
+          
+          // RotateY para efecto 3D
+          const rotateY = offset * 18;
+          
+          // Opacidad dinámica
+          const opacity = isActive ? 1 : Math.max(0.35, 1 - absOffset * 0.35);
+          
+          // Blur para elementos no activos
+          const blur = isActive ? 0 : absOffset * 1.5;
           
           return (
             <div
@@ -112,13 +174,21 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
               style={{
                 opacity,
                 transform: `scale(${scale}) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`,
-                zIndex: 20 - Math.abs(offset),
-                willChange: 'transform, opacity',
+                filter: `blur(${blur}px)`,
+                zIndex: Math.round(20 - Math.abs(offset) * 10),
+                willChange: 'transform, opacity, filter',
                 backfaceVisibility: 'hidden',
                 transformStyle: 'preserve-3d',
+                transition: isAnimating 
+                  ? `transform ${DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                     opacity ${DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                     filter ${DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`
+                  : 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                     opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                     filter 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               }}
             >
-              <TestimonialCard {...testimonial} isCenter={Math.abs(offset) < 0.5} />
+              <TestimonialCard {...testimonial} isCenter={isActive} />
             </div>
           );
         })}
