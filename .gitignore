@@ -1,20 +1,39 @@
-Nothing should be ignored in this case, as only a source code file (.tsx) was modified and no build artifacts, dependencies, or temporary files were involved.
-
-Output: (empty)
-
-
+```
+# Dependencies
 node_modules/
+
+# Build artifacts
 dist/
 build/
+*.js
+*.ts
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Logs and temp files
 *.log
 *.tmp
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# OS
 .DS_Store
-.idea/
-.vscode/
-*.env
-*.env.local
-*.env.development
-*.env.production
-*.env.test
-*.tsbuildinfo
-.next/
+Thumbs.db
+```
