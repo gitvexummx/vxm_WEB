@@ -204,7 +204,7 @@ export default function ServiceCarousel({ services }: ServiceCarouselProps) {
         }}
       >
         {extendedServices.map((service, idx) => {
-          const actualIndex = idx % totalCards;
+          //const actualIndex = idx % totalCards;
           return (
             <div
               key={`${service.id}-${idx}`}
