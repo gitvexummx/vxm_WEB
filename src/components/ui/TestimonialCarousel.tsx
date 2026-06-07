@@ -24,25 +24,21 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
   const animationFrameRef = useRef<number | null>(null);
   const progressRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  const isTransitioningRef = useRef<boolean>(false);
 
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
-    if (isTransitioningRef.current) return;
     setCurrentIndex(index);
     progressRef.current = 0;
     lastTimeRef.current = Date.now();
   }, []);
 
   const goNext = useCallback(() => {
-    if (isTransitioningRef.current) return;
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     progressRef.current = 0;
     lastTimeRef.current = Date.now();
   }, [testimonials.length]);
 
   const goPrev = useCallback(() => {
-    if (isTransitioningRef.current) return;
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     progressRef.current = 0;
     lastTimeRef.current = Date.now();
@@ -56,7 +52,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
     let startTime: number | null = null;
 
     const animate = (timestamp: number) => {
-      if (isHovering || isTransitioningRef.current) {
+      if (isHovering) {
         animationFrameRef.current = requestAnimationFrame(animate);
         return;
       }
@@ -70,7 +66,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       // When progress reaches 1, trigger the transition
       if (newProgress >= 1 && progressRef.current < 1) {
         progressRef.current = 1;
-        isTransitioningRef.current = true;
         
         // Trigger the slide change
         setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -78,7 +73,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         // Reset after a brief moment to allow CSS transition to complete
         setTimeout(() => {
           progressRef.current = 0;
-          isTransitioningRef.current = false;
           startTime = null;
         }, 100);
       } else {
