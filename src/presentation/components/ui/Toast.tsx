@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
