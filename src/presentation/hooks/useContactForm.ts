@@ -4,11 +4,11 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { leadSchema, type LeadInput, type LeadSuccess, type LeadError } from '@application/validators/schemas';
 import { CreateLeadUseCase } from '@application/usecases/CreateLeadUseCase';
-import { LeadRepository } from '@infrastructure/repositories/LeadRepository';
+//import { ILeadRepository } from '@infrastructure/repositories/LeadRepository';
 
 /**
- * Estado del hook.
- */
+* Estado del hook.
+*/
 interface UseContactFormState {
   values: LeadInput;
   errors: Record<string, string>;
