@@ -22,40 +22,67 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const progressRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
+  const isTransitioningRef = useRef<boolean>(false);
 
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
+    if (isTransitioningRef.current) return;
     setCurrentIndex(index);
+    progressRef.current = 0;
     lastTimeRef.current = Date.now();
   }, []);
 
   const goNext = useCallback(() => {
+    if (isTransitioningRef.current) return;
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    progressRef.current = 0;
     lastTimeRef.current = Date.now();
   }, [testimonials.length]);
 
   const goPrev = useCallback(() => {
+    if (isTransitioningRef.current) return;
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    progressRef.current = 0;
     lastTimeRef.current = Date.now();
   }, [testimonials.length]);
 
-  // Auto-play functionality with smooth 60fps animation
+  // Auto-play functionality with smooth step-by-step animation at 60fps
   useEffect(() => {
-    if (isHovering || !carouselRef.current) return;
+    if (!carouselRef.current) return;
 
     const interval = 4000; // 4 seconds per testimonial
     let startTime: number | null = null;
-    let lastIndex = currentIndex;
 
     const animate = (timestamp: number) => {
+      if (isHovering || isTransitioningRef.current) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
-
-      if (elapsed >= interval && lastIndex === currentIndex) {
-        lastIndex = currentIndex;
+      
+      // Calculate progress (0 to 1)
+      const newProgress = Math.min(elapsed / interval, 1);
+      
+      // When progress reaches 1, trigger the transition
+      if (newProgress >= 1 && progressRef.current < 1) {
+        progressRef.current = 1;
+        isTransitioningRef.current = true;
+        
+        // Trigger the slide change
         setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-        startTime = timestamp;
+        
+        // Reset after a brief moment to allow CSS transition to complete
+        setTimeout(() => {
+          progressRef.current = 0;
+          isTransitioningRef.current = false;
+          startTime = null;
+        }, 100);
+      } else {
+        progressRef.current = newProgress;
       }
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -68,7 +95,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [currentIndex, isHovering, testimonials.length]);
+  }, [isHovering, testimonials.length]);
 
   return (
     <div 
@@ -80,6 +107,8 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       {/* Navigation arrows - Fixed position, no hover effect */}
       <button
         onClick={goPrev}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
       >
@@ -90,6 +119,8 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       <button
         onClick={goNext}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
       >
@@ -137,6 +168,8 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           <button
             key={idx}
             onClick={() => goToIndex(idx)}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
             className={`testimonial-carousel-dot ${
               idx === currentIndex ? 'active' : 'inactive'
             }`}
