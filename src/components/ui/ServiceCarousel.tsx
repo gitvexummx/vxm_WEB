@@ -35,7 +35,7 @@ export default function ServiceCarousel({
   const gsapContextRef = useRef<gsap.Context | null>(null);
   const isTransitioningRef = useRef<boolean>(false);
   
-  // Duplicate services for infinite loop effect
+  // Duplicate services for infinite loop effect (two sets)
   const displayServices = [...services, ...services];
   const singleSetWidthPercent = 100 / services.length;
   
@@ -44,53 +44,44 @@ export default function ServiceCarousel({
     if (!autoPlay || isHovering || isDragging || !trackRef.current) return;
     
     const track = trackRef.current;
-    const cardWidth = track.querySelector('.service-carousel-card')?.getBoundingClientRect().width || 320;
-    const gap = 16; // mx-4 = 1rem gap on each side
+    const cardElement = track.querySelector('.service-carousel-card');
+    if (!cardElement) return;
+    
+    const cardWidth = cardElement.getBoundingClientRect().width;
+    const gap = 24; // mx-3 on mobile, mx-4 on md+
     const totalCardWidth = cardWidth + gap;
     const setWidthPx = services.length * totalCardWidth;
     
-    gsapContextRef.current = gsap.context(() => {
-      let currentX = 0;
-      let lastPosition = 0;
+    let currentX = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      if (isTransitioningRef.current || isHovering || isDragging) {
+        return;
+      }
       
-      const animate = () => {
-        if (isTransitioningRef.current) {
-          requestAnimationFrame(animate);
-          return;
-        }
-        
-        currentX -= (totalCardWidth / autoPlayInterval) * 16.67; // pixels per frame at ~60fps
-        
-        // Check if we need to teleport
-        if (currentX <= -setWidthPx) {
-          isTransitioningRef.current = true;
-          gsap.set(track, { x: currentX + setWidthPx });
-          currentX += setWidthPx;
-          isTransitioningRef.current = false;
-        } else if (currentX > 0) {
-          isTransitioningRef.current = true;
-          gsap.set(track, { x: currentX - setWidthPx });
-          currentX -= setWidthPx;
-          isTransitioningRef.current = false;
-        }
-        
-        gsap.set(track, { x: currentX, force3D: true });
-        lastPosition = currentX;
-        
-        if (!isHovering && !isDragging) {
-          requestAnimationFrame(animate);
-        }
-      };
+      currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
       
-      animate();
-    }, carouselRef);
+      // Teleport when first set moves past halfway point
+      if (currentX <= -setWidthPx / 2) {
+        isTransitioningRef.current = true;
+        gsap.set(track, { x: 0 });
+        currentX = 0;
+        isTransitioningRef.current = false;
+      }
+      
+      gsap.set(track, { x: currentX, force3D: true });
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animationId = requestAnimationFrame(animate);
     
     return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       if (gsapContextRef.current) {
         gsapContextRef.current.revert();
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
@@ -138,14 +129,17 @@ export default function ServiceCarousel({
     const velocity = velocityRef.current;
     const currentX = gsap.getProperty(trackRef.current, 'x') as number;
     const track = trackRef.current;
-    const cardWidth = track.querySelector('.service-carousel-card')?.getBoundingClientRect().width || 320;
-    const gap = 16;
+    const cardElement = track.querySelector('.service-carousel-card');
+    if (!cardElement) return;
+    
+    const cardWidth = cardElement.getBoundingClientRect().width;
+    const gap = 24;
     const totalCardWidth = cardWidth + gap;
     const setWidthPx = services.length * totalCardWidth;
     
-    // Normalize position to be within [-setWidthPx, 0] range
-    let normalizedX = currentX % (-setWidthPx);
-    if (normalizedX > 0) normalizedX += -setWidthPx;
+    // Normalize position to be within [-setWidthPx/2, 0] range for teleport at halfway
+    let normalizedX = currentX % (-setWidthPx / 2);
+    if (normalizedX > 0) normalizedX += -setWidthPx / 2;
     
     gsap.set(track, { x: normalizedX });
     
@@ -160,7 +154,11 @@ export default function ServiceCarousel({
         ease: 'power2.out',
         force3D: true,
         onComplete: () => {
-          // Restart autoplay after momentum ends
+          // Final normalization after momentum
+          const finalX = gsap.getProperty(track, 'x') as number;
+          let finalNormalizedX = finalX % (-setWidthPx / 2);
+          if (finalNormalizedX > 0) finalNormalizedX += -setWidthPx / 2;
+          gsap.set(track, { x: finalNormalizedX });
         }
       });
     }

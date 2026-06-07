@@ -1544,8 +1544,11 @@ body {
   height: 0.75rem;
 }
 
-.testimonial-carousel-dot.inactive:hover {
-  background-color: #6b7280;
+/* No hover effect on dots - fixed state always */
+@media (hover: hover) {
+  .testimonial-carousel-dot.inactive:hover {
+    background-color: #6b7280;
+  }
 }
 
 /* Testimonial Card Internal Styles */
@@ -3792,8 +3795,11 @@ body {
   transform: scale(1.2);
 }
 
-.testimonial-carousel-dot.inactive:hover {
-  background: var(--muted-foreground);
+/* No hover effect on dots - fixed state always */
+@media (hover: hover) {
+  .testimonial-carousel-dot.inactive:hover {
+    background: var(--muted-foreground);
+  }
 }
 
 /* Service Cards */
