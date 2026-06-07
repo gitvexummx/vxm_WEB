@@ -31,7 +31,6 @@ export default function ServiceCarousel({
   const velocityRef = useRef<number>(0);
   const lastXRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  const animationFrameRef = useRef<number | null>(null);
   const gsapContextRef = useRef<gsap.Context | null>(null);
   const isTransitioningRef = useRef<boolean>(false);
   
