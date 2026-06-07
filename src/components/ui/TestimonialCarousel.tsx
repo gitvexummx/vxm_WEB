@@ -23,8 +23,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
-  isHovering
-
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
     setCurrentIndex(index);
@@ -45,15 +43,14 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Navigation arrows */}
+      {/* Navigation arrows - Fixed position, no hover effect */}
       <motion.button
         onClick={goPrev}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
-        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </motion.button>
@@ -62,10 +59,9 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         onClick={goNext}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
-        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </motion.button>
@@ -113,7 +109,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
               idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
-            whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
           />
         ))}

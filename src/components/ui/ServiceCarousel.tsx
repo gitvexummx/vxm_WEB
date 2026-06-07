@@ -34,7 +34,6 @@ export default function ServiceCarousel({
   const animationFrameRef = useRef<number | null>(null);
   const gsapContextRef = useRef<gsap.Context | null>(null);
   
-  //const CARD_WIDTH_PERCENT = 100;
   const DUPLICATE_COUNT = 2;
   
   const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
@@ -186,7 +185,7 @@ export default function ServiceCarousel({
   return (
     <div 
       ref={carouselRef}
-      className="relative overflow-hidden py-12 service-carousel-container select-none"
+      className="relative overflow-hidden py-8 md:py-12 service-carousel-container select-none"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
         setIsHovering(false);
@@ -213,15 +212,15 @@ export default function ServiceCarousel({
         {displayServices.map((service, index) => (
           <div
             key={`${service.id}-${index}`}
-            className="flex-shrink-0 w-80 mx-4"
+            className="flex-shrink-0 w-[280px] sm:w-80 mx-3 md:mx-4 max-w-[calc(100vw-2rem)] sm:max-w-[320px]"
             style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
           >
             <a href={`/servicios/${service.slug}`} className="block">
-              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
-                <div className="w-12 h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
+              <div className="glass-medium border border-neon-primary/20 rounded-xl p-5 md:p-6 h-auto min-h-[260px] md:min-h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
                   {getIcon(service.icon)}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
+                <h3 className="text-lg md:text-xl font-bold text-white mb-2">{service.name}</h3>
                 <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
               </div>
             </a>
@@ -230,8 +229,8 @@ export default function ServiceCarousel({
       </div>
       
       {/* Gradient overlays for fade effect */}
-      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-dark-900 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 left-0 w-12 md:w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-12 md:w-20 bg-gradient-to-l from-dark-900 to-transparent pointer-events-none z-10" />
     </div>
   );
 }
