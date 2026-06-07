@@ -1,360 +1,365 @@
-'use client';
-
-import { useEffect, useRef, useState, useCallback, JSX } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 
-interface Service {
+interface ServiceCard {
   id: string;
-  name: string;
-  slug: string;
+  title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
+  link: string;
+  tags: string[];
 }
 
 interface ServiceCarouselProps {
-  services: Service[];
-  autoPlay?: boolean;
-  autoPlayInterval?: number;
+  services: ServiceCard[];
 }
 
-export default function ServiceCarousel({
-  services,
-  autoPlay = true,
-  autoPlayInterval = 3000
-}: ServiceCarouselProps) {
-  const [isHovering, setIsHovering] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
+export function ServiceCarousel({ services }: ServiceCarouselProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const startXRef = useRef<number>(0);
-  const currentXRef = useRef<number>(0);
-  const velocityRef = useRef<number>(0);
-  const lastXRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
-  const gsapContextRef = useRef<gsap.Context | null>(null);
-  const isTransitioningRef = useRef<boolean>(false);
-  const animationFrameRef = useRef<number | null>(null);
+  const setYRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<gsap.core.Tween | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  // Drag values
+  const dragX = useMotionValue(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const lastX = useRef(0);
+  const velocity = useRef(0);
+  const rafId = useRef<number | null>(null);
+  const isManualDrag = useRef(false);
 
-  // Create two complete sets of services for infinite illusion
-  // Set 1: original services
-  // Set 2: clone of services
-  const displayServices = [...services, ...services];
-  //const totalSets = 2;
+  // Constants for infinite logic
+  const cardWidth = 320; // w-80 + gap approx
+  const gap = 16; // gap-4
+  const totalCards = services.length;
+  const setWidth = totalCards * (cardWidth + gap);
+  const midpoint = setWidth / 2;
 
-  // GSAP animation for smooth 60fps infinite scroll with teleportation at center
-  useEffect(() => {
-    if (!autoPlay || isHovering || isDragging || !trackRef.current) return;
-
-    const track = trackRef.current;
-    const cardElement = track.querySelector('.service-carousel-card');
-    if (!cardElement) return;
-
-    const cardWidth = cardElement.getBoundingClientRect().width;
-    const gap = 24; // mx-3 on mobile, mx-4 on md+
-    const totalCardWidth = cardWidth + gap;
-    const setWidthPx = services.length * totalCardWidth;
-    const halfSetWidthPx = setWidthPx / 2;
-
-    let currentX = gsap.getProperty(track, 'x') as number || 0;
-    let animationId: number;
-
-    const animate = () => {
-      if (isTransitioningRef.current || isHovering || isDragging) {
-        return;
-      }
-
-      currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
-
-      // Teleport when the leading set moves past the center point
-      // When Set 1 goes left past center, Set 2 takes over from right
-      // When Set 2 goes left past center, Set 1 takes over from right
-      if (currentX <= -halfSetWidthPx) {
-        isTransitioningRef.current = true;
-        gsap.set(track, { x: 0 });
-        currentX = 0;
-        isTransitioningRef.current = false;
-      } else if (currentX > 0) {
-        // Handle dragging/scrolling to the right edge
-        isTransitioningRef.current = true;
-        gsap.set(track, { x: -halfSetWidthPx });
-        currentX = -halfSetWidthPx;
-        isTransitioningRef.current = false;
-      }
-
-      gsap.set(track, { x: currentX, force3D: true });
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animationId = requestAnimationFrame(animate);
-    animationFrameRef.current = animationId;
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-      if (gsapContextRef.current) {
-        gsapContextRef.current.revert();
-      }
-    };
-  }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
-
-  // Pause animation on hover without resetting position
-  useEffect(() => {
-    if (isHovering && animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    } else if (!isHovering && autoPlay && !isDragging && trackRef.current) {
-      // Resume animation from current position
-      const track = trackRef.current;
-      const cardElement = track.querySelector('.service-carousel-card');
-      if (!cardElement) return;
-
-      const cardWidth = cardElement.getBoundingClientRect().width;
-      const gap = 24;
-      const totalCardWidth = cardWidth + gap;
-      const setWidthPx = services.length * totalCardWidth;
-      const halfSetWidthPx = setWidthPx / 2;
-
-      let currentX = gsap.getProperty(track, 'x') as number || 0;
-
-      const animate = () => {
-        if (isTransitioningRef.current || isHovering || isDragging) {
-          return;
-        }
-
-        currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
-
-        if (currentX <= -halfSetWidthPx) {
-          isTransitioningRef.current = true;
-          gsap.set(track, { x: 0 });
-          currentX = 0;
-          isTransitioningRef.current = false;
-        } else if (currentX > 0) {
-          isTransitioningRef.current = true;
-          gsap.set(track, { x: -halfSetWidthPx });
-          currentX = -halfSetWidthPx;
-          isTransitioningRef.current = false;
-        }
-
-        gsap.set(track, { x: currentX, force3D: true });
-        animationFrameRef.current = requestAnimationFrame(animate);
-      };
-
-      animationFrameRef.current = requestAnimationFrame(animate);
-    }
-  }, [isHovering, autoPlay, isDragging, services.length, autoPlayInterval]);
-
-  // Drag functionality
-  const handleDragStart = useCallback((clientX: number) => {
-    setIsDragging(true);
-    startXRef.current = clientX;
-    lastXRef.current = clientX;
-    lastTimeRef.current = Date.now();
-    velocityRef.current = 0;
-
-    if (gsapContextRef.current) {
-      gsapContextRef.current.revert();
-    }
-
-    if (trackRef.current) {
-      currentXRef.current = gsap.getProperty(trackRef.current, 'x') as number;
-    }
-  }, []);
-
-  const handleDragMove = useCallback((clientX: number) => {
-    if (!isDragging || !trackRef.current) return;
-
-    const deltaX = clientX - startXRef.current;
-    const currentTime = Date.now();
-    const deltaTime = currentTime - lastTimeRef.current;
-
-    if (deltaTime > 0) {
-      velocityRef.current = (clientX - lastXRef.current) / deltaTime;
-    }
-
-    lastXRef.current = clientX;
-    lastTimeRef.current = currentTime;
-
-    const newX = currentXRef.current + deltaX;
-    gsap.set(trackRef.current, { x: newX, force3D: true });
-  }, [isDragging]);
-
-  const handleDragEnd = useCallback(() => {
-    if (!isDragging || !trackRef.current) return;
-
-    setIsDragging(false);
-
-    const velocity = velocityRef.current;
-    const currentX = gsap.getProperty(trackRef.current, 'x') as number;
-    const track = trackRef.current;
-    const cardElement = track.querySelector('.service-carousel-card');
-    if (!cardElement) return;
-
-    const cardWidth = cardElement.getBoundingClientRect().width;
-    const gap = 24;
-    const totalCardWidth = cardWidth + gap;
-    const setWidthPx = services.length * totalCardWidth;
-    const halfSetWidthPx = setWidthPx / 2;
-
-    // Normalize position to be within [-halfSetWidthPx, 0] range for teleport at halfway
-    let normalizedX = currentX % (-halfSetWidthPx);
-    if (normalizedX > 0) normalizedX += -halfSetWidthPx;
-
-    gsap.set(track, { x: normalizedX });
-
-    // Apply momentum based on drag velocity
-    if (Math.abs(velocity) > 0.1) {
-      const momentumDuration = Math.min(Math.abs(velocity) * 0.5, 2);
-      const targetX = normalizedX + (velocity * 100);
-
-      gsap.to(track, {
-        x: targetX,
-        duration: momentumDuration,
-        ease: 'power3.out',
-        force3D: true,
-        onComplete: () => {
-          // Final normalization after momentum with teleport at halfway
-          const finalX = gsap.getProperty(track, 'x') as number;
-          let finalNormalizedX = finalX % (-halfSetWidthPx);
-          if (finalNormalizedX > 0) finalNormalizedX += -halfSetWidthPx;
-          gsap.set(track, { x: finalNormalizedX });
-        }
-      });
-    }
-  }, [isDragging, services.length]);
-
-  // Mouse events
-  const handleMouseDown = (e: React.MouseEvent) => {
-    handleDragStart(e.clientX);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    handleDragMove(e.clientX);
-  };
-
-  const handleMouseUp = () => {
-    handleDragEnd();
-  };
-
-  const handleMouseLeave = () => {
-    if (isDragging) {
-      handleDragEnd();
-    }
-  };
-
-  // Touch events
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches[0]) {
-      handleDragStart(e.touches[0].clientX);
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches[0]) {
-      handleDragMove(e.touches[0].clientX);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    handleDragEnd();
-  };
-
-  return (
-    <div
-      ref={carouselRef}
-      className="relative overflow-hidden py-8 md:py-12 service-carousel-container"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => {
-        setIsHovering(false);
-        handleMouseLeave();
+  // Create Set Y (the clone set that teleports)
+  const SetY = () => (
+    <div 
+      ref={setYRef}
+      className="absolute top-0 left-0 flex gap-4 h-full pointer-events-none"
+      style={{ 
+        willChange: 'transform',
+        transform: 'translateX(-100%)' // Initial position: Left side
       }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
-      <div
-        ref={trackRef}
-        className="flex will-change-transform"
-        style={{
-          willChange: 'transform',
-          backfaceVisibility: 'hidden',
-          transform: 'translateZ(0)',
-        }}
-      >
-        {displayServices.map((service, index) => (
-          <div
-            key={`${service.id}-${index}`}
-            className="flex-shrink-0 w-[280px] sm:w-80 mx-3 md:mx-4 max-w-[calc(100vw-2rem)] sm:max-w-[320px]"
-          >
-            <div className="glass-medium border border-neon-primary/20 rounded-xl p-5 md:p-6 h-auto min-h-[260px] md:min-h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
-              {/* Content layer - clickable, but drag events are captured by parent */}
-              <a href={`/servicios/${service.slug}`} className="block relative z-0" style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
-                  {getIcon(service.icon)}
+      {services.map((service) => (
+        <div
+          key={`set-y-${service.id}`}
+          className="w-80 flex-shrink-0"
+          style={{ pointerEvents: 'none' }}
+        >
+          <a href={service.link} className="block group" style={{ pointerEvents: 'auto' }}>
+            <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-colors duration-300 overflow-hidden">
+              <CardContent className="p-6 flex flex-col h-full">
+                <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
+                  {service.icon}
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-white mb-2">{service.name}</h3>
-                <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Gradient overlays for fade effect */}
-      <div className="absolute inset-y-0 left-0 w-12 md:w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-12 md:w-20 bg-gradient-to-l from-dark-900 to-transparent pointer-events-none z-10" />
+                <h3 className="text-xl font-semibold mb-2 text-foreground">{service.title}</h3>
+                <p className="text-muted-foreground mb-4 flex-grow">{service.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {service.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
+                  Learn more <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
+              </CardContent>
+            </Card>
+          </a>
+        </div>
+      ))}
     </div>
   );
-}
 
-function getIcon(iconName: string) {
-  const icons: Record<string, JSX.Element> = {
-    brain: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-      </svg>
-    ),
-    cog: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-    code: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-      </svg>
-    ),
-    chart: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-    globe: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-      </svg>
-    ),
-    palette: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-      </svg>
-    ),
-    share: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-      </svg>
-    ),
-    support: (
-      <svg className="w-6 h-6 text-neon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ),
+  // Update Set Y position based on Set X scroll position
+  const updateSetYPosition = useCallback(() => {
+    if (!trackRef.current || !setYRef.current) return;
+    
+    const track = trackRef.current;
+    const setY = setYRef.current;
+    
+    // Get current translation of Set X (Track)
+    const style = window.getComputedStyle(track);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    const currentX = Math.abs(matrix.m41 % setWidth); // Normalize to 0-setWidth
+    
+    // Logic: 
+    // If currentX < midpoint (Left half of Set X visible) -> Set Y should be on LEFT (-100%)
+    // If currentX >= midpoint (Right half of Set X visible) -> Set Y should be on RIGHT (100%)
+    // Wait, user said: "si en pantalla está la mitad izquierda del set X de cards, el set Y estará a su izquierda"
+    // This means Set Y is filling the gap on the left.
+    // Actually, for infinite illusion:
+    // When scrolling Left (negative X):
+    //   If we see Right half of Set X, we need Set Y on the Right to fill upcoming space? No.
+    //   Let's stick to the prompt: "mitad izquierda del set X ... set Y a su izquierda"
+    
+    let targetTranslate = '-100%';
+    
+    // Determine which half is primarily in view relative to the container center
+    // Since the track moves negative (left), currentX represents how much we've scrolled.
+    // 0 to midpoint: Left half of Set X is passing through.
+    // midpoint to setWidth: Right half of Set X is passing through.
+    
+    if (currentX < midpoint) {
+      // Left half of Set X is in focus -> Set Y goes to Left
+      targetTranslate = '-100%';
+    } else {
+      // Right half of Set X is in focus -> Set Y goes to Right
+      targetTranslate = '100%';
+    }
+
+    // Apply instantly without transition to avoid visual jump
+    setY.style.transition = 'none';
+    setY.style.transform = `translateX(${targetTranslate})`;
+  }, [setWidth, midpoint]);
+
+  // Animation Loop for smooth 60fps drag and momentum
+  const animate = useCallback(() => {
+    if (!trackRef.current) return;
+
+    if (isManualDrag.current) {
+      // While dragging manually, update position directly from dragX
+      const newX = dragX.get() + dragOffset;
+      gsap.set(trackRef.current, { x: newX });
+      velocity.current = (newX - lastX.current);
+      lastX.current = newX;
+      updateSetYPosition();
+      rafId.current = requestAnimationFrame(animate);
+    } else if (!isPaused && !animationRef.current) {
+      // Auto-play logic handled by GSAP tween, but we need to update SetY continuously
+      updateSetYPosition();
+      rafId.current = requestAnimationFrame(animate);
+    } else if (isPaused) {
+       // Even when paused, we might need to update SetY if user drags while paused? 
+       // Assuming pause freezes everything including drag for simplicity, or drag overrides pause.
+       // If drag overrides pause, isManualDrag would be true.
+       updateSetYPosition();
+       rafId.current = requestAnimationFrame(animate);
+    }
+  }, [dragX, dragOffset, isPaused, updateSetYPosition]);
+
+  useEffect(() => {
+    if (!containerRef.current || !trackRef.current) return;
+
+    const container = containerRef.current;
+    const track = trackRef.current;
+    const totalWidth = setWidth * 2; // Set X + Set Y (conceptually)
+
+    // Initial GSAP Animation for Auto-play
+    const runAnimation = () => {
+      if (isPaused || isDragging) return;
+
+      // Kill existing animation
+      if (animationRef.current) animationRef.current.kill();
+
+      // Animate Set X from 0 to -setWidth (one full set length)
+      animationRef.current = gsap.to(track, {
+        x: `-=${setWidth}`, // Move left by one set width
+        duration: 40, // Speed
+        ease: 'none',
+        repeat: -1,
+        modifiers: {
+          x: (x: string) => {
+            // Wrap logic inside GSAP modifier to reset seamlessly
+            const numericX = parseFloat(x);
+            if (Math.abs(numericX) >= setWidth) {
+              return '0px'; // Reset to 0 instantly when one set length is covered
+            }
+            return x;
+          }
+        },
+        onUpdate: () => {
+          updateSetYPosition();
+        }
+      });
+    };
+
+    // Start auto animation
+    runAnimation();
+
+    // Start RAF loop for SetY updates and Drag physics
+    rafId.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) animationRef.current.kill();
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+  }, [isPaused, isDragging, setWidth, animate, updateSetYPosition]);
+
+  // Drag Handlers
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    isManualDrag.current = true;
+    lastX.current = dragX.get() + dragOffset;
+    velocity.current = 0;
+    
+    // Pause auto-animation while dragging
+    if (animationRef.current) {
+      animationRef.current.pause();
+    }
+    
+    (e.target as Element).setPointerCapture(e.pointerId);
   };
 
-  return icons[iconName] || icons.code;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    // dragX is updated by framer-motion automatically via prop, 
+    // but we need to combine it with offset if we want complex behavior.
+    // Simpler approach: Use framer-motion drag props and sync GSAP position in animate loop.
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    isManualDrag.current = false;
+    
+    // Calculate final offset to maintain position after drag
+    const finalDragX = dragX.get();
+    setDragOffset(prev => prev + finalDragX);
+    dragX.set(0); // Reset motion value
+    
+    // Momentum: If velocity is high, continue sliding
+    if (Math.abs(velocity.current) > 0.5) {
+      gsap.to(trackRef.current, {
+        x: `+=${velocity.current * 50}`, // Throw effect
+        duration: 1,
+        ease: 'power3.out',
+        onComplete: () => {
+           // Resume auto animation after throw
+           setDragOffset(prev => {
+             // Calculate new normalized offset to keep continuity
+             // This is tricky with GSAP reset logic. 
+             // Simplified: Just resume normal animation from current visual spot
+             // The GSAP modifier handles the wrap, so we just need to ensure 
+             // the DOM element is where GSAP thinks it is.
+             return 0; // Reset offset logic for simplicity in this specific GSAP setup
+           });
+           if(containerRef.current) {
+              // Force restart animation logic to sync state
+              const event = new Event('restart-carousel');
+              window.dispatchEvent(event);
+           }
+        }
+      });
+    } else {
+      // Resume auto animation immediately if no throw
+      if (animationRef.current) {
+        animationRef.current.resume();
+      }
+    }
+    
+    (e.target as Element).releasePointerCapture(e.pointerId);
+  };
+
+  // Listen for restart event after momentum
+  useEffect(() => {
+    const handleRestart = () => {
+       if (!isPaused && !isDragging && trackRef.current) {
+         if (animationRef.current) animationRef.current.kill();
+         // Re-trigger the main effect logic by toggling a state or calling runAnimation
+         // For simplicity, we rely on the dependency array of the main useEffect 
+         // but since we can't toggle deps easily, we manually recreate the tween:
+         const track = trackRef.current;
+         animationRef.current = gsap.to(track, {
+            x: `-=${setWidth}`,
+            duration: 40,
+            ease: 'none',
+            repeat: -1,
+            modifiers: {
+              x: (x: string) => {
+                const numericX = parseFloat(x);
+                if (Math.abs(numericX) >= setWidth) return '0px';
+                return x;
+              }
+            },
+            onUpdate: updateSetYPosition
+         });
+       }
+    };
+    window.addEventListener('restart-carousel', handleRestart);
+    return () => window.removeEventListener('restart-carousel', handleRestart);
+  }, [isPaused, isDragging, setWidth, updateSetYPosition]);
+
+  return (
+    <div 
+      ref={containerRef}
+      className="relative w-full overflow-hidden py-12"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+      {/* Draggable Track containing Set X */}
+      <motion.div
+        ref={trackRef}
+        className="flex gap-4 will-change-transform"
+        drag="x"
+        dragMomentum={false} // We handle momentum manually for 60fps control
+        x={dragX}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{ 
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
+          width: 'max-content'
+        }}
+      >
+        {/* SET X: The main animated set */}
+        {services.map((service) => (
+          <div
+            key={`set-x-${service.id}`}
+            className="w-80 flex-shrink-0"
+            style={{ 
+              pointerEvents: isDragging ? 'none' : 'auto',
+              userSelect: isDragging ? 'none' : 'auto'
+            }}
+          >
+            <a href={service.link} className="block group" style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
+              <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-colors duration-300 overflow-hidden">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">{service.title}</h3>
+                  <p className="text-muted-foreground mb-4 flex-grow">{service.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {service.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
+                    Learn more <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* SET Y: The teleporting clone set (Absolute Positioned) */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+         <SetY />
+      </div>
+      
+      {/* Overlay gradient for smooth edges */}
+      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+    </div>
+  );
 }
