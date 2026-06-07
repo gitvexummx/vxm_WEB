@@ -188,9 +188,8 @@ export function ServiceCarousel({ services }: ServiceCarouselProps) {
   }, [dragX, dragOffset, isPaused, updateSetYPosition]);
 
   useEffect(() => {
-    if (!containerRef.current || !trackRef.current) return;
+    if (!trackRef.current) return;
 
-    const container = containerRef.current;
     const track = trackRef.current;
     const totalWidth = setWidth * 2; // Set X + Set Y (conceptually)
 
