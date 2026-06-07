@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import servicesData from '../../../../public/data/services.json';
+import servicesData from '../../../data/services.json';
 import Accordion from './Accordion';
 
 interface PageProps {
