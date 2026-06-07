@@ -1,4 +1,6 @@
-import React, { useRef, useState } from 'react';
+'use client';
+
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { JSX } from 'react';
 
@@ -63,76 +65,169 @@ function getIcon(iconName: string) {
 }
 
 export default function ServiceCarousel({ services }: ServiceCarouselProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionProgress, setTransitionProgress] = useState(0);
 
-  // Constants for infinite logic
-  const cardWidth = 320; // w-80 + gap approx
+  const cardWidth = 320; // w-80
   const gap = 16; // gap-4
   const totalCards = services.length;
-  const setWidth = totalCards * (cardWidth + gap);
+  const slideSize = cardWidth + gap;
+
+  // Auto-scroll infinito
+  useEffect(() => {
+    if (isTransitioning) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % totalCards;
+        return next;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [totalCards, isTransitioning]);
+
+  const handleNext = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTransitionProgress(0);
+    
+    setCurrentIndex((prev) => {
+      const next = (prev + 1) % totalCards;
+      return next;
+    });
+
+    // Animación de progreso
+    const startTime = Date.now();
+    const duration = 400;
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
+      
+      setTransitionProgress(eased);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setIsTransitioning(false);
+        setTransitionProgress(0);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [totalCards, isTransitioning]);
+
+  const handlePrev = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTransitionProgress(0);
+
+    setCurrentIndex((prev) => {
+      const next = (prev - 1 + totalCards) % totalCards;
+      return next;
+    });
+
+    const startTime = Date.now();
+    const duration = 400;
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      
+      setTransitionProgress(eased);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setIsTransitioning(false);
+        setTransitionProgress(0);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [totalCards, isTransitioning]);
+
+  // Calcular el desplazamiento del track
+  const getTrackOffset = () => {
+    const baseOffset = -currentIndex * slideSize;
+    const transitionOffset = isTransitioning ? -slideSize * transitionProgress : 0;
+    return baseOffset + transitionOffset;
+  };
+
+  // Crear array extendido para loop infinito
+  const extendedServices = [
+    ...services,
+    ...services,
+    ...services,
+  ];
+
+  const displayStartIndex = currentIndex;
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative w-full overflow-hidden py-12"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => setIsPaused(false)}
-    >
-      {/* Draggable Track containing duplicated services for infinite scroll */}
+    <div className="relative w-full overflow-hidden py-12">
+      {/* Navigation buttons */}
+      <button
+        onClick={handlePrev}
+        disabled={isTransitioning}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full glass-medium border border-neon-primary/30 flex items-center justify-center text-white hover:bg-neon-primary/20 hover:border-neon-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Previous services"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <button
+        onClick={handleNext}
+        disabled={isTransitioning}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full glass-medium border border-neon-primary/30 flex items-center justify-center text-white hover:bg-neon-primary/20 hover:border-neon-primary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Next services"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      {/* Draggable Track */}
       <div
         ref={trackRef}
-        className="flex gap-4 will-change-transform"
-        style={{ 
-          cursor: 'grab',
-          touchAction: 'none',
-          width: 'max-content',
-          animation: isPaused ? 'none' : 'scroll-left 40s linear infinite'
+        className="flex gap-4"
+        style={{
+          transform: `translateX(${getTrackOffset()}px)`,
+          transition: isTransitioning ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          willChange: 'transform',
         }}
       >
-        {/* First set of services */}
-        {services.map((service) => (
-          <div
-            key={`set-x-${service.id}`}
-            className="w-80 flex-shrink-0"
-          >
-            <a href={`/servicios/${service.slug}`} className="block group">
-              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
-                <div className="mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {getIcon(service.icon)}
+        {extendedServices.map((service, idx) => {
+          const actualIndex = idx % totalCards;
+          return (
+            <div
+              key={`${service.id}-${idx}`}
+              className="w-80 flex-shrink-0"
+              style={{
+                visibility: idx >= displayStartIndex && idx < displayStartIndex + 4 ? 'visible' : 'hidden',
+              }}
+            >
+              <a href={`/servicios/${service.slug}`} className="block group">
+                <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
+                  <div className="mb-4 group-hover:scale-110 transition-transform duration-300">
+                    {getIcon(service.icon)}
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">{service.name}</h3>
+                  <p className="text-gray-400 text-sm mb-4 flex-grow">{service.description}</p>
+                  <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
+                    Learn more <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{service.name}</h3>
-                <p className="text-gray-400 text-sm mb-4 flex-grow">{service.description}</p>
-                <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
-                  Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </div>
-            </a>
-          </div>
-        ))}
-        {/* Duplicate set for seamless infinite scroll */}
-        {services.map((service) => (
-          <div
-            key={`set-dup-${service.id}`}
-            className="w-80 flex-shrink-0"
-          >
-            <a href={`/servicios/${service.slug}`} className="block group">
-              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
-                <div className="mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {getIcon(service.icon)}
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{service.name}</h3>
-                <p className="text-gray-400 text-sm mb-4 flex-grow">{service.description}</p>
-                <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
-                  Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </div>
-            </a>
-          </div>
-        ))}
+              </a>
+            </div>
+          );
+        })}
       </div>
       
       {/* Overlay gradient for smooth edges */}
