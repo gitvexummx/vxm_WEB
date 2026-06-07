@@ -1,7 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { motion, useMotionValue } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { JSX } from 'react';
@@ -106,18 +104,16 @@ export function ServiceCarousel({ services }: ServiceCarouselProps) {
           style={{ pointerEvents: 'none' }}
         >
           <a href={`/servicios/${service.slug}`} className="block group" style={{ pointerEvents: 'auto' }}>
-            <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-colors duration-300 overflow-hidden">
-              <CardContent className="p-6 flex flex-col h-full">
-                <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
-                  {getIcon(service.icon)}
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">{service.name}</h3>
-                <p className="text-muted-foreground mb-4 flex-grow">{service.description}</p>
-                <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
-                  Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
+              <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
+                {getIcon(service.icon)}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
+              <p className="text-gray-400 text-sm mb-4 flex-grow">{service.description}</p>
+              <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
+                Learn more <ArrowRight className="ml-2 h-4 w-4" />
+              </div>
+            </div>
           </a>
         </div>
       ))}
@@ -369,18 +365,16 @@ export function ServiceCarousel({ services }: ServiceCarouselProps) {
             }}
           >
             <a href={`/servicios/${service.slug}`} className="block group" style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
-              <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-colors duration-300 overflow-hidden">
-                <CardContent className="p-6 flex flex-col h-full">
-                  <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
-                    {getIcon(service.icon)}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">{service.name}</h3>
-                  <p className="text-muted-foreground mb-4 flex-grow">{service.description}</p>
-                  <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
-                    Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="glass-medium border border-neon-primary/20 rounded-xl p-6 h-full hover:border-neon-primary/50 transition-all duration-300 group cursor-pointer hover:transform hover:scale-[1.03]">
+                <div className="mb-4 text-primary group-hover:scale-110 transition-transform duration-300">
+                  {getIcon(service.icon)}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
+                <p className="text-gray-400 text-sm mb-4 flex-grow">{service.description}</p>
+                <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
+                  Learn more <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
+              </div>
             </a>
           </div>
         ))}
