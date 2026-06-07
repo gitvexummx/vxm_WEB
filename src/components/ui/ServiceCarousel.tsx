@@ -64,7 +64,7 @@ function getIcon(iconName: string) {
   return icons[iconName] || icons.code;
 }
 
-export function ServiceCarousel({ services }: ServiceCarouselProps) {
+export default function ServiceCarousel({ services }: ServiceCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const setYRef = useRef<HTMLDivElement>(null);

@@ -1,3 +1,20 @@
 Nothing should be ignored in this case, as only a source code file (.tsx) was modified and no build artifacts, dependencies, or temporary files were involved.
 
 Output: (empty)
+
+
+node_modules/
+dist/
+build/
+*.log
+*.tmp
+.DS_Store
+.idea/
+.vscode/
+*.env
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+*.tsbuildinfo
+.next/
