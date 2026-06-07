@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Testimonial {
@@ -19,27 +19,63 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
 
   // Handle manual navigation
   const goToIndex = useCallback((index: number) => {
     setCurrentIndex(index);
+    lastTimeRef.current = Date.now();
   }, []);
 
   const goNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    lastTimeRef.current = Date.now();
   }, [testimonials.length]);
 
   const goPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    lastTimeRef.current = Date.now();
   }, [testimonials.length]);
+
+  // Auto-play functionality with smooth 60fps animation
+  useEffect(() => {
+    if (isHovering || !carouselRef.current) return;
+
+    const interval = 4000; // 4 seconds per testimonial
+    let startTime: number | null = null;
+    let lastIndex = currentIndex;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+
+      if (elapsed >= interval && lastIndex === currentIndex) {
+        lastIndex = currentIndex;
+        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+        startTime = timestamp;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [currentIndex, isHovering, testimonials.length]);
 
   return (
     <div 
       ref={carouselRef}
       className="testimonial-carousel-wrapper"
-      onMouseEnter={() => IsHovering(true)}
-      onMouseLeave={() => IsHovering(false)}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       {/* Navigation arrows - Fixed position, no hover effect */}
       <button
@@ -66,18 +102,26 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         {testimonials.map((testimonial, idx) => {
           const offset = (idx - currentIndex + testimonials.length) % testimonials.length;
           const position = offset - Math.floor(testimonials.length / 2);
+          const absPosition = Math.abs(position);
+          
+          // Calculate smooth scale and translateX with depth effect
+          const scale = Math.max(0.85, 1.1 - absPosition * 0.25);
+          const translateX = position * 320;
+          const translateZ = -absPosition * 100;
+          const rotateY = position * 15;
+          const opacity = Math.max(0.4, 1 - absPosition * 0.3);
           
           return (
             <div
               key={testimonial.id}
               className="testimonial-carousel-card-wrapper"
               style={{
-                opacity: Math.max(0.4, 1 - Math.abs(position) * 0.3),
-                transform: `scale(${Math.max(0.85, 1.1 - Math.abs(position) * 0.25)}) translateX(${position * 320}px)`,
+                opacity,
+                transform: `scale(${scale}) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`,
                 zIndex: 20 - Math.abs(position),
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
-                transition: 'opacity 0.4s ease, transform 0.4s ease',
+                transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                 transformStyle: 'preserve-3d'
               }}
             >
