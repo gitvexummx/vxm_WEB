@@ -36,7 +36,7 @@ export default function ServiceCarousel({
   
   // Duplicate services for infinite loop effect (two sets)
   const displayServices = [...services, ...services];
-  const singleSetWidthPercent = 100 / services.length;
+  //const singleSetWidthPercent = 100 / services.length;
   
   // GSAP animation for smooth 60fps infinite scroll with teleportation
   useEffect(() => {
