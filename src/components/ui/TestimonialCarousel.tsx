@@ -38,6 +38,8 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
     <div 
       ref={carouselRef}
       className="testimonial-carousel-wrapper"
+      onMouseEnter={() => IsHovering(true)}
+      onMouseLeave={() => IsHovering(false)}
     >
       {/* Navigation arrows - Fixed position, no hover effect */}
       <button

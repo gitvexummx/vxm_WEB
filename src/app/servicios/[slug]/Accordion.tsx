@@ -31,7 +31,10 @@ export default function Accordion({ subservices }: AccordionProps) {
           {/* Header - Siempre visible */}
           <button
             onClick={() => toggleAccordion(index)}
-            className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors duration-200 min-h-[60px] sm:min-h-[70px]"
+            className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors duration-200"
+            id={`accordion-header-${index}`}
+            aria-expanded={activeIndex === index}
+            aria-controls={`accordion-content-${index}`}
           >
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -59,6 +62,9 @@ export default function Accordion({ subservices }: AccordionProps) {
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
+                id={`accordion-content-${index}`}
+                role="region"
+                aria-labelledby={`accordion-header-${index}`}
               >
                 <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t border-purple-500/10">
                   {/* Párrafo 1 */}
