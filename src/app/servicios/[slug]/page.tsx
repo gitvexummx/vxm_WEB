@@ -3,10 +3,6 @@ import { notFound } from 'next/navigation';
 import servicesData from '../../../data/services.json';
 import Accordion from './Accordion';
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
-}
-
 interface SubService {
   title: string;
   paragraph1: string;
@@ -21,6 +17,16 @@ interface Service {
   description: string;
   icon: string;
   subservices: SubService[];
+}
+
+export function generateStaticParams() {
+  return servicesData.services.map((service: Service) => ({
+    slug: service.slug,
+  }));
+}
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
 }
 
 export default async function ServicioDetallePage({ params }: PageProps) {
