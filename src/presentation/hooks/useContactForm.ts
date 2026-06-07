@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { leadSchema, type LeadInput, type LeadSuccess, type LeadError } from '@application/validators/schemas';
 import { CreateLeadUseCase } from '@application/usecases/CreateLeadUseCase';
-//import { ILeadRepository } from '@infrastructure/repositories/LeadRepository';
+import { SupabaseLeadRepository, ILeadRepository } from '@infrastructure/repositories/LeadRepository';
 
 /**
 * Estado del hook.
@@ -29,7 +29,7 @@ export function useContactForm() {
   const router = useRouter();
   
   // Inicialización de dependencias (Inyección manual por ahora)
-  const repository = new LeadRepository();
+  const repository = new SupabaseLeadRepository() as ILeadRepository;
   const useCase = new CreateLeadUseCase(repository);
 
   const [state, setState] = useState<UseContactFormState>({
@@ -38,7 +38,11 @@ export function useContactForm() {
       correo: '',
       telefono: '',
       giro: '',
+      presupuesto: 0,
+      ubicacion: 'CDMX',
+      alcaldia_municipio: '',
       descripcion_problema: '',
+      acepta_tyc: true,
     },
     errors: {},
     isSubmitting: false,
@@ -124,11 +128,15 @@ export function useContactForm() {
   const reset = useCallback(() => {
     setState({
       values: {
-        name: '',
-        email: '',
-        phone: '',
-        service: '',
-        message: '',
+        nombre_empresa: '',
+        correo: '',
+        telefono: '',
+        giro: '',
+        presupuesto: 0,
+        ubicacion: 'CDMX',
+        alcaldia_municipio: '',
+        descripcion_problema: '',
+        acepta_tyc: true,
       },
       errors: {},
       isSubmitting: false,

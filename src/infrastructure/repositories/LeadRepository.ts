@@ -45,3 +45,7 @@ export class SupabaseLeadRepository implements ILeadRepository {
     return data.id;
   }
 }
+
+export interface ILeadRepository {
+  create(lead: Lead): Promise<string>;
+}
