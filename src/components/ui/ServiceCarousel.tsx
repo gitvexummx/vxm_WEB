@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { JSX } from 'react';
 
