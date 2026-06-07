@@ -31,7 +31,6 @@ export default function ServiceCarousel({
   const velocityRef = useRef<number>(0);
   const lastXRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  const animationFrameRef = useRef<number | null>(null);
   const gsapContextRef = useRef<gsap.Context | null>(null);
   const isTransitioningRef = useRef<boolean>(false);
   
@@ -85,6 +84,21 @@ export default function ServiceCarousel({
       }
     };
   }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
+  
+  // Reset carousel to position 0 when hovering
+  useEffect(() => {
+    if (isHovering && trackRef.current) {
+      gsap.to(trackRef.current, {
+        x: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+        force3D: true,
+        onComplete: () => {
+          isTransitioningRef.current = false;
+        }
+      });
+    }
+  }, [isHovering]);
   
   // Drag functionality
   const handleDragStart = useCallback((clientX: number) => {
