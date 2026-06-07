@@ -39,7 +39,7 @@ export default function ServiceCarousel({
   // Set 1: original services
   // Set 2: clone of services
   const displayServices = [...services, ...services];
-  const totalSets = 2;
+  //const totalSets = 2;
 
   // GSAP animation for smooth 60fps infinite scroll with teleportation at center
   useEffect(() => {
