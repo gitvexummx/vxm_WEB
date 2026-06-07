@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Testimonial {
@@ -19,29 +19,71 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [targetIndex, setTargetIndex] = useState(0);
+  const animationRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+  const startIndexRef = useRef<number>(0);
+  
+  const DURATION = 600; // ms
 
-  // Handle manual navigation with smooth 3D transitions
+  const animateTransition = useCallback((timestamp: number) => {
+    if (!startTimeRef.current) startTimeRef.current = timestamp;
+    const elapsed = timestamp - startTimeRef.current;
+    const progress = Math.min(elapsed / DURATION, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
+
+    const start = startIndexRef.current;
+    const end = targetIndex;
+    const current = start + (end - start) * eased;
+
+    setCurrentIndex(current);
+
+    if (progress < 1) {
+      animationRef.current = requestAnimationFrame(animateTransition);
+    } else {
+      setCurrentIndex(targetIndex);
+      animationRef.current = null;
+      startTimeRef.current = null;
+    }
+  }, [targetIndex]);
+
   const goToIndex = useCallback((index: number) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex(index);
-    setTimeout(() => setIsAnimating(false), 600);
-  }, [isAnimating]);
+    if (animationRef.current !== null) return;
+    
+    startIndexRef.current = currentIndex;
+    setTargetIndex(index);
+    startTimeRef.current = null;
+    animationRef.current = requestAnimationFrame(animateTransition);
+  }, [currentIndex, animateTransition]);
 
   const goNext = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    setTimeout(() => setIsAnimating(false), 600);
-  }, [testimonials.length, isAnimating]);
+    if (animationRef.current !== null) return;
+    
+    const nextIndex = (currentIndex + 1) % testimonials.length;
+    startIndexRef.current = currentIndex;
+    setTargetIndex(nextIndex);
+    startTimeRef.current = null;
+    animationRef.current = requestAnimationFrame(animateTransition);
+  }, [currentIndex, testimonials.length, animateTransition]);
 
   const goPrev = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    setTimeout(() => setIsAnimating(false), 600);
-  }, [testimonials.length, isAnimating]);
+    if (animationRef.current !== null) return;
+    
+    const prevIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    startIndexRef.current = currentIndex;
+    setTargetIndex(prevIndex);
+    startTimeRef.current = null;
+    animationRef.current = requestAnimationFrame(animateTransition);
+  }, [currentIndex, testimonials.length, animateTransition]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (animationRef.current !== null) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="testimonial-carousel-wrapper">
@@ -50,7 +92,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         onClick={goPrev}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
-        disabled={isAnimating}
+        disabled={animationRef.current !== null}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -61,7 +103,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         onClick={goNext}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
-        disabled={isAnimating}
+        disabled={animationRef.current !== null}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -70,16 +112,21 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
 
       <div className="testimonial-carousel-stage">
         {testimonials.map((testimonial, idx) => {
-          const offset = (idx - currentIndex + testimonials.length) % testimonials.length;
-          const position = offset - Math.floor(testimonials.length / 2);
-          const absPosition = Math.abs(position);
+          // Calcular posición relativa considerando loop infinito
+          let offset = idx - Math.round(currentIndex);
           
-          // Calculate smooth scale and translateX with depth effect
-          const scale = Math.max(0.85, 1.1 - absPosition * 0.25);
-          const translateX = position * 320;
-          const translateZ = -absPosition * 100;
-          const rotateY = position * 15;
-          const opacity = Math.max(0.4, 1 - absPosition * 0.3);
+          // Ajustar para loop infinito
+          if (offset > testimonials.length / 2) offset -= testimonials.length;
+          if (offset < -testimonials.length / 2) offset += testimonials.length;
+          
+          const absOffset = Math.abs(offset);
+          
+          // Calcular transformaciones 3D smooth
+          const scale = Math.max(0.85, 1.1 - absOffset * 0.25);
+          const translateX = offset * 320;
+          const translateZ = -absOffset * 100;
+          const rotateY = offset * 15;
+          const opacity = Math.max(0.4, 1 - absOffset * 0.3);
           
           return (
             <div
@@ -88,14 +135,13 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
               style={{
                 opacity,
                 transform: `scale(${scale}) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg)`,
-                zIndex: 20 - Math.abs(position),
+                zIndex: 20 - Math.abs(offset),
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
-                transition: isAnimating ? 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-                transformStyle: 'preserve-3d'
+                transformStyle: 'preserve-3d',
               }}
             >
-              <TestimonialCard {...testimonial} isCenter={Math.abs(position) < 0.5} />
+              <TestimonialCard {...testimonial} isCenter={Math.abs(offset) < 0.5} />
             </div>
           );
         })}
@@ -108,10 +154,10 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
             key={idx}
             onClick={() => goToIndex(idx)}
             className={`testimonial-carousel-dot ${
-              idx === currentIndex ? 'active' : 'inactive'
+              Math.abs(idx - Math.round(currentIndex)) % testimonials.length === 0 ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
-            disabled={isAnimating}
+            disabled={animationRef.current !== null}
           />
         ))}
       </div>
