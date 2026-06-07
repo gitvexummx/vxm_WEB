@@ -1544,6 +1544,10 @@ body {
   height: 0.75rem;
 }
 
+.testimonial-carousel-dot.inactive:hover {
+  background-color: #6b7280;
+}
+
 /* Testimonial Card Internal Styles */
 .testimonial-card {
   border: 1px solid;
