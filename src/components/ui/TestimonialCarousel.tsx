@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 
 interface Testimonial {
   id: string;
@@ -20,7 +19,6 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   // Handle manual navigation
@@ -44,27 +42,25 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       onMouseLeave={() => IsHovering(false)}
     >
       {/* Navigation arrows - Fixed position, no hover effect */}
-      <motion.button
+      <button
         onClick={goPrev}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
-        whileTap={{ scale: 0.95 }}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-      </motion.button>
+      </button>
       
-      <motion.button
+      <button
         onClick={goNext}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
-        whileTap={{ scale: 0.95 }}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </motion.button>
+      </button>
 
       <div className="testimonial-carousel-stage">
         {testimonials.map((testimonial, idx) => {
@@ -72,29 +68,21 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           const position = offset - Math.floor(testimonials.length / 2);
           
           return (
-            <motion.div
+            <div
               key={testimonial.id}
               className="testimonial-carousel-card-wrapper"
-              initial={false}
-              animate={{ 
-                opacity: Math.max(0.4, 1 - Math.abs(position) * 0.3),
-                scale: Math.max(0.85, 1.1 - Math.abs(position) * 0.25),
-                x: position * 320,
-                zIndex: 20 - Math.abs(position)
-              }}
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.4, 0, 0.2, 1],
-                willChange: 'transform, opacity'
-              }}
               style={{
+                opacity: Math.max(0.4, 1 - Math.abs(position) * 0.3),
+                transform: `scale(${Math.max(0.85, 1.1 - Math.abs(position) * 0.25)}) translateX(${position * 320}px)`,
+                zIndex: 20 - Math.abs(position),
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
-                transform: 'translateZ(0)'
+                transition: 'opacity 0.4s ease, transform 0.4s ease',
+                transformStyle: 'preserve-3d'
               }}
             >
               <TestimonialCard {...testimonial} isCenter={Math.abs(position) < 0.5} />
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -102,14 +90,13 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       {/* Navigation dots */}
       <div className="testimonial-carousel-dots">
         {testimonials.map((_, idx) => (
-          <motion.button
+          <button
             key={idx}
             onClick={() => goToIndex(idx)}
             className={`testimonial-carousel-dot ${
               idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
-            whileTap={{ scale: 0.9 }}
           />
         ))}
       </div>

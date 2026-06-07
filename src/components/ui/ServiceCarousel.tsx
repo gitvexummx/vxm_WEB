@@ -22,8 +22,8 @@ export default function ServiceCarousel({
   autoPlay = true, 
   autoPlayInterval = 3000 
 }: ServiceCarouselProps) {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef<number>(0);
@@ -33,44 +33,55 @@ export default function ServiceCarousel({
   const lastTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
   const gsapContextRef = useRef<gsap.Context | null>(null);
+  const isTransitioningRef = useRef<boolean>(false);
   
-  const DUPLICATE_COUNT = 2;
+  // Duplicate services for infinite loop effect (two sets)
+  const displayServices = [...services, ...services];
+  const singleSetWidthPercent = 100 / services.length;
   
-  const displayServices = Array(DUPLICATE_COUNT).fill(services).flat();
-  
-  // GSAP animation for smooth 60fps infinite scroll
+  // GSAP animation for smooth 60fps infinite scroll with teleportation
   useEffect(() => {
     if (!autoPlay || isHovering || isDragging || !trackRef.current) return;
     
-    const duration = (services.length * autoPlayInterval) / 1000;
+    const track = trackRef.current;
+    const cardElement = track.querySelector('.service-carousel-card');
+    if (!cardElement) return;
     
-    gsapContextRef.current = gsap.context(() => {
-      const track = trackRef.current!;
+    const cardWidth = cardElement.getBoundingClientRect().width;
+    const gap = 24; // mx-3 on mobile, mx-4 on md+
+    const totalCardWidth = cardWidth + gap;
+    const setWidthPx = services.length * totalCardWidth;
+    
+    let currentX = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      if (isTransitioningRef.current || isHovering || isDragging) {
+        return;
+      }
       
-      gsap.to(track, {
-        xPercent: -100,
-        duration: duration,
-        ease: 'none',
-        repeat: -1,
-        force3D: true,
-        modifiers: {
-          xPercent: (x: number) => {
-            if (x <= -100) {
-              gsap.set(track, { xPercent: 0 });
-              return 0;
-            }
-            return x;
-          }
-        }
-      });
-    }, carouselRef);
+      currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
+      
+      // Teleport when first set moves past halfway point
+      if (currentX <= -setWidthPx / 2) {
+        isTransitioningRef.current = true;
+        gsap.set(track, { x: 0 });
+        currentX = 0;
+        isTransitioningRef.current = false;
+      }
+      
+      gsap.set(track, { x: currentX, force3D: true });
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animationId = requestAnimationFrame(animate);
     
     return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       if (gsapContextRef.current) {
         gsapContextRef.current.revert();
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
@@ -88,8 +99,7 @@ export default function ServiceCarousel({
     }
     
     if (trackRef.current) {
-      const currentTransform = gsap.getProperty(trackRef.current, 'xPercent');
-      currentXRef.current = parseFloat(currentTransform as string) || 0;
+      currentXRef.current = gsap.getProperty(trackRef.current, 'x') as number;
     }
   }, []);
   
@@ -107,10 +117,8 @@ export default function ServiceCarousel({
     lastXRef.current = clientX;
     lastTimeRef.current = currentTime;
     
-    const movePercent = (deltaX / trackRef.current.offsetWidth) * 100;
-    const newX = currentXRef.current + movePercent;
-    
-    gsap.set(trackRef.current, { xPercent: newX });
+    const newX = currentXRef.current + deltaX;
+    gsap.set(trackRef.current, { x: newX, force3D: true });
   }, [isDragging]);
   
   const handleDragEnd = useCallback(() => {
@@ -119,32 +127,42 @@ export default function ServiceCarousel({
     setIsDragging(false);
     
     const velocity = velocityRef.current;
-    const currentX = gsap.getProperty(trackRef.current!, 'xPercent') as number;
+    const currentX = gsap.getProperty(trackRef.current, 'x') as number;
+    const track = trackRef.current;
+    const cardElement = track.querySelector('.service-carousel-card');
+    if (!cardElement) return;
     
-    // Normalize xPercent to be within [0, -100] range for seamless loop
-    let normalizedX = currentX % -100;
-    if (normalizedX > 0) normalizedX += -100;
+    const cardWidth = cardElement.getBoundingClientRect().width;
+    const gap = 24;
+    const totalCardWidth = cardWidth + gap;
+    const setWidthPx = services.length * totalCardWidth;
     
-    gsap.set(trackRef.current, { xPercent: normalizedX });
+    // Normalize position to be within [-setWidthPx/2, 0] range for teleport at halfway
+    let normalizedX = currentX % (-setWidthPx / 2);
+    if (normalizedX > 0) normalizedX += -setWidthPx / 2;
+    
+    gsap.set(track, { x: normalizedX });
     
     // Apply momentum based on drag velocity
     if (Math.abs(velocity) > 0.1) {
       const momentumDuration = Math.min(Math.abs(velocity) * 0.5, 2);
-      const targetX = normalizedX + (velocity * 50);
+      const targetX = normalizedX + (velocity * 100);
       
-      gsap.to(trackRef.current, {
-        xPercent: targetX,
+      gsap.to(track, {
+        x: targetX,
         duration: momentumDuration,
         ease: 'power2.out',
         force3D: true,
         onComplete: () => {
-          if (!isHovering && autoPlay) {
-            // Restart autoplay after momentum ends
-          }
+          // Final normalization after momentum
+          const finalX = gsap.getProperty(track, 'x') as number;
+          let finalNormalizedX = finalX % (-setWidthPx / 2);
+          if (finalNormalizedX > 0) finalNormalizedX += -setWidthPx / 2;
+          gsap.set(track, { x: finalNormalizedX });
         }
       });
     }
-  }, [isDragging, isHovering, autoPlay]);
+  }, [isDragging, services.length]);
   
   // Mouse events
   const handleMouseDown = (e: React.MouseEvent) => {

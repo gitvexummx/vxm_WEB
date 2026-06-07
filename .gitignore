@@ -1,4 +1,4 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
@@ -8,20 +8,7 @@ build/
 .next/
 .nuxt/
 public/dist/
-
-# Logs
-*.log
-
-# Environment variables
-.env
-.env.local
-*.env.*
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
+out/
 
 # Python
 __pycache__/
@@ -36,6 +23,29 @@ venv/
 .env
 .env.local
 .env.*
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
 .venv/
 .python-version
 .pytest_cache/

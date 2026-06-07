@@ -117,24 +117,24 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-16 md:py-20">
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-20">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
             <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Contáctanos
             </span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">
             La tecnología que tu negocio necesita está a un clic de distancia
           </p>
         </div>
       </section>
 
       {/* Form Section */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="card-neon p-8 md:p-12">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-20">
+        <div className="card-neon p-6 sm:p-8 md:p-12">
           {submitStatus === 'success' ? (
             <div className="text-center py-12">
               <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -175,7 +175,7 @@ export default function ContactoPage() {
               </div>
 
               {/* Correo y Teléfono */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <label htmlFor="correo" className="block text-sm font-medium text-gray-300 mb-2">
                     Correo Electrónico *
@@ -214,7 +214,7 @@ export default function ContactoPage() {
               </div>
 
               {/* Giro y Presupuesto */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <label htmlFor="giro" className="block text-sm font-medium text-gray-300 mb-2">
                     Giro de la Empresa *
@@ -258,7 +258,7 @@ export default function ContactoPage() {
               </div>
 
               {/* Ubicación */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <label htmlFor="ubicacion" className="block text-sm font-medium text-gray-300 mb-2">
                     Ubicación *
@@ -368,7 +368,7 @@ export default function ContactoPage() {
 
       {/* Contact Info */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div className="card-neon text-center">
             <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
               <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
