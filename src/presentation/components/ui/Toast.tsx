@@ -1,6 +1,5 @@
 'use client';
-
-import { JSX, useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -12,12 +11,13 @@ interface ToastProps {
   onClose: () => void;
 }
 
-export const Toast: (props: ToastProps) => JSX.Element = ({
+// Cambiamos el tipo de retorno a ReactNode
+export const Toast = ({
   message,
   type = 'info',
   duration = 5000,
   onClose,
-}) => {
+}: ToastProps): ReactNode => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -25,7 +25,6 @@ export const Toast: (props: ToastProps) => JSX.Element = ({
     setIsMounted(true);
     // Trigger entrance animation
     requestAnimationFrame(() => setIsVisible(true));
-
     const timer = setTimeout(() => {
       setIsVisible(false);
       setTimeout(onClose, 300); // Wait for exit animation
@@ -87,12 +86,9 @@ export const Toast: (props: ToastProps) => JSX.Element = ({
 
   return createPortal(
     <div
-      className={`
-        fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border
-        ${style.bg} ${style.border} ${style.glow}
-        transform transition-all duration-300 ease-out
-        ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
-      `}
+      className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border ${style.bg} ${style.border} ${style.glow} transform transition-all duration-300 ease-out ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+      }`}
       role="alert"
     >
       {style.icon}
