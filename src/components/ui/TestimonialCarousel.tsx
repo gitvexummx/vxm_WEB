@@ -20,7 +20,6 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   // Handle manual navigation
@@ -40,8 +39,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
     <div 
       ref={carouselRef}
       className="testimonial-carousel-wrapper"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
     >
       {/* Navigation arrows - Fixed position, no hover effect */}
       <motion.button
