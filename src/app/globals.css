@@ -1519,14 +1519,19 @@ body {
   margin-top: 2.5rem;
 }
 
+/* Hide dots on mobile */
+@media (max-width: 767px) {
+  .testimonial-carousel-dots {
+    display: none;
+  }
+}
+
 .testimonial-carousel-dot {
   border-radius: 9999px;
   transition: all 300ms ease;
   cursor: pointer;
   border: none;
   padding: 0;
-  min-width: 44px;
-  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1534,15 +1539,15 @@ body {
 
 .testimonial-carousel-dot.active {
   background-color: var(--neon-primary);
-  width: 1.5rem;
-  height: 0.4rem;
+  width: 0.5rem;
+  height: 0.5rem;
   box-shadow: 0 0 10px rgba(217, 70, 239, 0.6);
 }
 
 .testimonial-carousel-dot.inactive {
   background-color: #4b5563;
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.5rem;
+  height: 0.5rem;
 }
 
 /* No hover effect on dots - fixed state always */
@@ -3781,9 +3786,16 @@ body {
   margin-top: var(--spacing-xl);
 }
 
+/* Hide dots on mobile */
+@media (max-width: 767px) {
+  .testimonial-carousel-dots {
+    display: none;
+  }
+}
+
 .testimonial-carousel-dot {
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: var(--border-radius-full);
   border: none;
   background: var(--muted);
