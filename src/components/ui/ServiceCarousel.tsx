@@ -17,10 +17,10 @@ interface ServiceCarouselProps {
   autoPlayInterval?: number;
 }
 
-export default function ServiceCarousel({ 
-  services, 
-  autoPlay = true, 
-  autoPlayInterval = 3000 
+export default function ServiceCarousel({
+  services,
+  autoPlay = true,
+  autoPlayInterval = 3000
 }: ServiceCarouselProps) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -33,47 +33,61 @@ export default function ServiceCarousel({
   const lastTimeRef = useRef<number>(0);
   const gsapContextRef = useRef<gsap.Context | null>(null);
   const isTransitioningRef = useRef<boolean>(false);
-  
-  // Duplicate services for infinite loop effect (two sets)
+  const animationFrameRef = useRef<number | null>(null);
+
+  // Create two complete sets of services for infinite illusion
+  // Set 1: original services
+  // Set 2: clone of services
   const displayServices = [...services, ...services];
-  
-  // GSAP animation for smooth 60fps infinite scroll with teleportation
+  const totalSets = 2;
+
+  // GSAP animation for smooth 60fps infinite scroll with teleportation at center
   useEffect(() => {
     if (!autoPlay || isHovering || isDragging || !trackRef.current) return;
-    
+
     const track = trackRef.current;
     const cardElement = track.querySelector('.service-carousel-card');
     if (!cardElement) return;
-    
+
     const cardWidth = cardElement.getBoundingClientRect().width;
     const gap = 24; // mx-3 on mobile, mx-4 on md+
     const totalCardWidth = cardWidth + gap;
     const setWidthPx = services.length * totalCardWidth;
-    
-    let currentX = 0;
+    const halfSetWidthPx = setWidthPx / 2;
+
+    let currentX = gsap.getProperty(track, 'x') as number || 0;
     let animationId: number;
-    
+
     const animate = () => {
       if (isTransitioningRef.current || isHovering || isDragging) {
         return;
       }
-      
+
       currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
-      
-      // Teleport when first set moves past halfway point
-      if (currentX <= -setWidthPx / 2) {
+
+      // Teleport when the leading set moves past the center point
+      // When Set 1 goes left past center, Set 2 takes over from right
+      // When Set 2 goes left past center, Set 1 takes over from right
+      if (currentX <= -halfSetWidthPx) {
         isTransitioningRef.current = true;
         gsap.set(track, { x: 0 });
         currentX = 0;
         isTransitioningRef.current = false;
+      } else if (currentX > 0) {
+        // Handle dragging/scrolling to the right edge
+        isTransitioningRef.current = true;
+        gsap.set(track, { x: -halfSetWidthPx });
+        currentX = -halfSetWidthPx;
+        isTransitioningRef.current = false;
       }
-      
+
       gsap.set(track, { x: currentX, force3D: true });
       animationId = requestAnimationFrame(animate);
     };
-    
+
     animationId = requestAnimationFrame(animate);
-    
+    animationFrameRef.current = animationId;
+
     return () => {
       if (animationId) {
         cancelAnimationFrame(animationId);
@@ -83,22 +97,53 @@ export default function ServiceCarousel({
       }
     };
   }, [autoPlay, isHovering, isDragging, services.length, autoPlayInterval]);
-  
-  // Reset carousel to position 0 when hovering
+
+  // Pause animation on hover without resetting position
   useEffect(() => {
-    if (isHovering && trackRef.current) {
-      gsap.to(trackRef.current, {
-        x: 0,
-        duration: 0.5,
-        ease: 'power2.out',
-        force3D: true,
-        onComplete: () => {
+    if (isHovering && animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    } else if (!isHovering && autoPlay && !isDragging && trackRef.current) {
+      // Resume animation from current position
+      const track = trackRef.current;
+      const cardElement = track.querySelector('.service-carousel-card');
+      if (!cardElement) return;
+
+      const cardWidth = cardElement.getBoundingClientRect().width;
+      const gap = 24;
+      const totalCardWidth = cardWidth + gap;
+      const setWidthPx = services.length * totalCardWidth;
+      const halfSetWidthPx = setWidthPx / 2;
+
+      let currentX = gsap.getProperty(track, 'x') as number || 0;
+
+      const animate = () => {
+        if (isTransitioningRef.current || isHovering || isDragging) {
+          return;
+        }
+
+        currentX -= (totalCardWidth / autoPlayInterval) * 16.67;
+
+        if (currentX <= -halfSetWidthPx) {
+          isTransitioningRef.current = true;
+          gsap.set(track, { x: 0 });
+          currentX = 0;
+          isTransitioningRef.current = false;
+        } else if (currentX > 0) {
+          isTransitioningRef.current = true;
+          gsap.set(track, { x: -halfSetWidthPx });
+          currentX = -halfSetWidthPx;
           isTransitioningRef.current = false;
         }
-      });
+
+        gsap.set(track, { x: currentX, force3D: true });
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+
+      animationFrameRef.current = requestAnimationFrame(animate);
     }
-  }, [isHovering]);
-  
+  }, [isHovering, autoPlay, isDragging, services.length, autoPlayInterval]);
+
   // Drag functionality
   const handleDragStart = useCallback((clientX: number) => {
     setIsDragging(true);
@@ -106,117 +151,118 @@ export default function ServiceCarousel({
     lastXRef.current = clientX;
     lastTimeRef.current = Date.now();
     velocityRef.current = 0;
-    
+
     if (gsapContextRef.current) {
       gsapContextRef.current.revert();
     }
-    
+
     if (trackRef.current) {
       currentXRef.current = gsap.getProperty(trackRef.current, 'x') as number;
     }
   }, []);
-  
+
   const handleDragMove = useCallback((clientX: number) => {
     if (!isDragging || !trackRef.current) return;
-    
+
     const deltaX = clientX - startXRef.current;
     const currentTime = Date.now();
     const deltaTime = currentTime - lastTimeRef.current;
-    
+
     if (deltaTime > 0) {
       velocityRef.current = (clientX - lastXRef.current) / deltaTime;
     }
-    
+
     lastXRef.current = clientX;
     lastTimeRef.current = currentTime;
-    
+
     const newX = currentXRef.current + deltaX;
     gsap.set(trackRef.current, { x: newX, force3D: true });
   }, [isDragging]);
-  
+
   const handleDragEnd = useCallback(() => {
     if (!isDragging || !trackRef.current) return;
-    
+
     setIsDragging(false);
-    
+
     const velocity = velocityRef.current;
     const currentX = gsap.getProperty(trackRef.current, 'x') as number;
     const track = trackRef.current;
     const cardElement = track.querySelector('.service-carousel-card');
     if (!cardElement) return;
-    
+
     const cardWidth = cardElement.getBoundingClientRect().width;
     const gap = 24;
     const totalCardWidth = cardWidth + gap;
     const setWidthPx = services.length * totalCardWidth;
-    
-    // Normalize position to be within [-setWidthPx/2, 0] range for teleport at halfway
-    let normalizedX = currentX % (-setWidthPx / 2);
-    if (normalizedX > 0) normalizedX += -setWidthPx / 2;
-    
+    const halfSetWidthPx = setWidthPx / 2;
+
+    // Normalize position to be within [-halfSetWidthPx, 0] range for teleport at halfway
+    let normalizedX = currentX % (-halfSetWidthPx);
+    if (normalizedX > 0) normalizedX += -halfSetWidthPx;
+
     gsap.set(track, { x: normalizedX });
-    
+
     // Apply momentum based on drag velocity
     if (Math.abs(velocity) > 0.1) {
       const momentumDuration = Math.min(Math.abs(velocity) * 0.5, 2);
       const targetX = normalizedX + (velocity * 100);
-      
+
       gsap.to(track, {
         x: targetX,
         duration: momentumDuration,
-        ease: 'power2.out',
+        ease: 'power3.out',
         force3D: true,
         onComplete: () => {
-          // Final normalization after momentum
+          // Final normalization after momentum with teleport at halfway
           const finalX = gsap.getProperty(track, 'x') as number;
-          let finalNormalizedX = finalX % (-setWidthPx / 2);
-          if (finalNormalizedX > 0) finalNormalizedX += -setWidthPx / 2;
+          let finalNormalizedX = finalX % (-halfSetWidthPx);
+          if (finalNormalizedX > 0) finalNormalizedX += -halfSetWidthPx;
           gsap.set(track, { x: finalNormalizedX });
         }
       });
     }
   }, [isDragging, services.length]);
-  
+
   // Mouse events
   const handleMouseDown = (e: React.MouseEvent) => {
     handleDragStart(e.clientX);
   };
-  
+
   const handleMouseMove = (e: React.MouseEvent) => {
     handleDragMove(e.clientX);
   };
-  
+
   const handleMouseUp = () => {
     handleDragEnd();
   };
-  
+
   const handleMouseLeave = () => {
     if (isDragging) {
       handleDragEnd();
     }
   };
-  
+
   // Touch events
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches[0]) {
       handleDragStart(e.touches[0].clientX);
     }
   };
-  
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches[0]) {
       handleDragMove(e.touches[0].clientX);
     }
   };
-  
+
   const handleTouchEnd = () => {
     handleDragEnd();
   };
 
   return (
-    <div 
+    <div
       ref={carouselRef}
-      className="relative overflow-hidden py-8 md:py-12 service-carousel-container select-none"
+      className="relative overflow-hidden py-8 md:py-12 service-carousel-container"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
         setIsHovering(false);
@@ -233,32 +279,31 @@ export default function ServiceCarousel({
       <div
         ref={trackRef}
         className="flex will-change-transform"
-        style={{ 
+        style={{
           willChange: 'transform',
           backfaceVisibility: 'hidden',
           transform: 'translateZ(0)',
-          userSelect: 'none'
         }}
       >
         {displayServices.map((service, index) => (
           <div
             key={`${service.id}-${index}`}
             className="flex-shrink-0 w-[280px] sm:w-80 mx-3 md:mx-4 max-w-[calc(100vw-2rem)] sm:max-w-[320px]"
-            style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
           >
-            <a href={`/servicios/${service.slug}`} className="block">
-              <div className="glass-medium border border-neon-primary/20 rounded-xl p-5 md:p-6 h-auto min-h-[260px] md:min-h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
+            <div className="glass-medium border border-neon-primary/20 rounded-xl p-5 md:p-6 h-auto min-h-[260px] md:min-h-[280px] hover:border-neon-primary/50 transition-colors duration-300 group service-carousel-card">
+              {/* Content layer - clickable, but drag events are captured by parent */}
+              <a href={`/servicios/${service.slug}`} className="block relative z-0" style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-neon-primary/20 to-neon-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:from-neon-primary/30 group-hover:to-neon-secondary/30 transition-colors duration-300">
                   {getIcon(service.icon)}
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-white mb-2">{service.name}</h3>
                 <p className="text-gray-400 text-sm line-clamp-3">{service.description}</p>
-              </div>
-            </a>
+              </a>
+            </div>
           </div>
         ))}
       </div>
-      
+
       {/* Gradient overlays for fade effect */}
       <div className="absolute inset-y-0 left-0 w-12 md:w-20 bg-gradient-to-r from-dark-900 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-y-0 right-0 w-12 md:w-20 bg-gradient-to-l from-dark-900 to-transparent pointer-events-none z-10" />
@@ -310,6 +355,6 @@ function getIcon(iconName: string) {
       </svg>
     ),
   };
-  
+
   return icons[iconName] || icons.code;
 }
