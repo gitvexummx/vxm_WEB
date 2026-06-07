@@ -1,5 +1,4 @@
 import { supabase } from '../supabase/client';
-import type { ILeadRepository } from '@core/ports/ILeadRepository';
 import type { Lead } from '@core/entities/Lead';
 import type { Database } from '../supabase/types';
 
