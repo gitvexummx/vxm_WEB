@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import Image from 'next/image';
 
 interface Testimonial {
@@ -19,92 +19,38 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const progressRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Handle manual navigation
+  // Handle manual navigation with smooth 3D transitions
   const goToIndex = useCallback((index: number) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex(index);
-    progressRef.current = 0;
-    lastTimeRef.current = Date.now();
-  }, []);
+    setTimeout(() => setIsAnimating(false), 600);
+  }, [isAnimating]);
 
   const goNext = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    progressRef.current = 0;
-    lastTimeRef.current = Date.now();
-  }, [testimonials.length]);
+    setTimeout(() => setIsAnimating(false), 600);
+  }, [testimonials.length, isAnimating]);
 
   const goPrev = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    progressRef.current = 0;
-    lastTimeRef.current = Date.now();
-  }, [testimonials.length]);
-
-  // Auto-play functionality with smooth step-by-step animation at 60fps
-  useEffect(() => {
-    if (!carouselRef.current) return;
-
-    const interval = 4000; // 4 seconds per testimonial
-    let startTime: number | null = null;
-
-    const animate = (timestamp: number) => {
-      if (isHovering) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-        return;
-      }
-
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      
-      // Calculate progress (0 to 1)
-      const newProgress = Math.min(elapsed / interval, 1);
-      
-      // When progress reaches 1, trigger the transition
-      if (newProgress >= 1 && progressRef.current < 1) {
-        progressRef.current = 1;
-        
-        // Trigger the slide change
-        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-        
-        // Reset after a brief moment to allow CSS transition to complete
-        setTimeout(() => {
-          progressRef.current = 0;
-          startTime = null;
-        }, 100);
-      } else {
-        progressRef.current = newProgress;
-      }
-
-      animationFrameRef.current = requestAnimationFrame(animate);
-    };
-
-    animationFrameRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isHovering, testimonials.length]);
+    setTimeout(() => setIsAnimating(false), 600);
+  }, [testimonials.length, isAnimating]);
 
   return (
-    <div 
-      ref={carouselRef}
-      className="testimonial-carousel-wrapper"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      {/* Navigation arrows - Fixed position, no hover effect */}
+    <div className="testimonial-carousel-wrapper">
+      {/* Navigation arrows */}
       <button
         onClick={goPrev}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
         className="testimonial-carousel-nav-button left"
         aria-label="Previous testimonial"
+        disabled={isAnimating}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -113,10 +59,9 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       <button
         onClick={goNext}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
         className="testimonial-carousel-nav-button right"
         aria-label="Next testimonial"
+        disabled={isAnimating}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -146,7 +91,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
                 zIndex: 20 - Math.abs(position),
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
-                transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: isAnimating ? 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
                 transformStyle: 'preserve-3d'
               }}
             >
@@ -162,12 +107,11 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           <button
             key={idx}
             onClick={() => goToIndex(idx)}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
             className={`testimonial-carousel-dot ${
               idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
+            disabled={isAnimating}
           />
         ))}
       </div>

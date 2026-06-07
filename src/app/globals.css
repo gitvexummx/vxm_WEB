@@ -1676,7 +1676,7 @@ body {
 .service-card-icon-container {
   width: 3rem;
   height: 3rem;
-  background: linear-gradient(to bottom right, rgba(217, 70, 239, 0.2), rgba(249, 22, 143, 0.2));
+  background: linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -1686,18 +1686,18 @@ body {
 }
 
 .service-card:hover .service-card-icon-container {
-  background: linear-gradient(to bottom right, rgba(217, 70, 239, 0.3), rgba(249, 22, 143, 0.3));
+  background: linear-gradient(135deg, var(--neon-secondary), var(--neon-primary));
 }
 
 .service-card-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--neon-primary);
+  color: white;
 }
 
 .service-card-title {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   color: white;
   margin-bottom: 0.5rem;
 }
@@ -4364,5 +4364,17 @@ body {
   .container {
     max-width: var(--container-width);
     margin: 0 auto;
+  }
+}
+
+/* ============================================
+   Service Carousel - Infinite Scroll Animation
+   ============================================ */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
