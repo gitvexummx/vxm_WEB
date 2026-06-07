@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import ServiceCarousel from '@/components/ui/ServiceCarousel';
+import { ServiceCarousel } from '@/components/ui/ServiceCarousel';
 import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
 import ServiceSkeleton from '@/components/ui/ServiceSkeleton';
 import TestimonialSkeleton from '@/components/ui/TestimonialSkeleton';
