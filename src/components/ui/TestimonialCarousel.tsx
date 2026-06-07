@@ -19,80 +19,57 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [targetIndex, setTargetIndex] = useState(0);
-  const animationRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
-  const startIndexRef = useRef<number>(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   
   const DURATION = 600; // ms
 
-  const animateTransition = useCallback((timestamp: number) => {
-    if (!startTimeRef.current) startTimeRef.current = timestamp;
-    const elapsed = timestamp - startTimeRef.current;
-    const progress = Math.min(elapsed / DURATION, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
-
-    const start = startIndexRef.current;
-    const end = targetIndex;
-    const current = start + (end - start) * eased;
-
-    setCurrentIndex(current);
-
-    if (progress < 1) {
-      animationRef.current = requestAnimationFrame(animateTransition);
-    } else {
-      setCurrentIndex(targetIndex);
-      animationRef.current = null;
-      startTimeRef.current = null;
-    }
-  }, [targetIndex]);
-
   const goToIndex = useCallback((index: number) => {
-    if (animationRef.current !== null) return;
+    if (isAnimating) return;
     
-    startIndexRef.current = currentIndex;
-    setTargetIndex(index);
-    startTimeRef.current = null;
-    animationRef.current = requestAnimationFrame(animateTransition);
-  }, [currentIndex, animateTransition]);
+    setIsAnimating(true);
+    setCurrentIndex(index);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, DURATION);
+  }, [isAnimating]);
 
   const goNext = useCallback(() => {
-    if (animationRef.current !== null) return;
+    if (isAnimating) return;
     
-    const nextIndex = (currentIndex + 1) % testimonials.length;
-    startIndexRef.current = currentIndex;
-    setTargetIndex(nextIndex);
-    startTimeRef.current = null;
-    animationRef.current = requestAnimationFrame(animateTransition);
-  }, [currentIndex, testimonials.length, animateTransition]);
+    setIsAnimating(true);
+    setCurrentIndex((prev) => {
+      const next = (prev + 1) % testimonials.length;
+      return next;
+    });
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, DURATION);
+  }, [isAnimating, testimonials.length]);
 
   const goPrev = useCallback(() => {
-    if (animationRef.current !== null) return;
+    if (isAnimating) return;
     
-    const prevIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-    startIndexRef.current = currentIndex;
-    setTargetIndex(prevIndex);
-    startTimeRef.current = null;
-    animationRef.current = requestAnimationFrame(animateTransition);
-  }, [currentIndex, testimonials.length, animateTransition]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
+    setIsAnimating(true);
+    setCurrentIndex((prev) => {
+      const next = (prev - 1 + testimonials.length) % testimonials.length;
+      return next;
+    });
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, DURATION);
+  }, [isAnimating, testimonials.length]);
 
   return (
     <div className="testimonial-carousel-wrapper">
       {/* Navigation arrows */}
       <button
         onClick={goPrev}
-        className="testimonial-carousel-nav-button left"
+        className="testimonial-nav-button left"
         aria-label="Previous testimonial"
-        disabled={animationRef.current !== null}
+        disabled={isAnimating}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -101,9 +78,9 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       
       <button
         onClick={goNext}
-        className="testimonial-carousel-nav-button right"
+        className="testimonial-nav-button right"
         aria-label="Next testimonial"
-        disabled={animationRef.current !== null}
+        disabled={isAnimating}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -113,7 +90,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       <div className="testimonial-carousel-stage">
         {testimonials.map((testimonial, idx) => {
           // Calcular posición relativa considerando loop infinito
-          let offset = idx - Math.round(currentIndex);
+          let offset = idx - currentIndex;
           
           // Ajustar para loop infinito
           if (offset > testimonials.length / 2) offset -= testimonials.length;
@@ -154,10 +131,10 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
             key={idx}
             onClick={() => goToIndex(idx)}
             className={`testimonial-carousel-dot ${
-              Math.abs(idx - Math.round(currentIndex)) % testimonials.length === 0 ? 'active' : 'inactive'
+              idx === currentIndex ? 'active' : 'inactive'
             }`}
             aria-label={`Go to testimonial ${idx + 1}`}
-            disabled={animationRef.current !== null}
+            disabled={isAnimating}
           />
         ))}
       </div>
