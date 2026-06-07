@@ -27,7 +27,7 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          id?: string; // UUID generado por defecto
+          id?: string; 
           nombre_empresa: string;
           correo: string;
           telefono: string;
@@ -52,8 +52,9 @@ export interface Database {
           acepta_tyc?: boolean;
           created_at?: string;
         };
+        // 👇 AGREGA ESTA LÍNEA 👇
+        Relationships: []; 
       };
-      // Aquí se agregarán más tablas en el futuro (ej. services, testimonials, etc.)
     };
     Views: {
       [_ in never]: never;
@@ -62,6 +63,10 @@ export interface Database {
       [_ in never]: never;
     };
     Enums: {
+      [_ in never]: never;
+    };
+    // 👇 A veces también se requiere CompositeTypes si tu versión es muy reciente
+    CompositeTypes: {
       [_ in never]: never;
     };
   };
