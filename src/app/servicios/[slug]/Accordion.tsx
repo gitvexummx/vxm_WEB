@@ -32,6 +32,9 @@ export default function Accordion({ subservices }: AccordionProps) {
           <button
             onClick={() => toggleAccordion(index)}
             className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors duration-200"
+            id={`accordion-header-${index}`}
+            aria-expanded={activeIndex === index}
+            aria-controls={`accordion-content-${index}`}
           >
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -43,8 +46,9 @@ export default function Accordion({ subservices }: AccordionProps) {
               animate={{ rotate: activeIndex === index ? 180 : 0 }}
               transition={{ duration: 0.3 }}
               className="text-purple-400"
+              aria-hidden="true"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </motion.div>
@@ -59,6 +63,9 @@ export default function Accordion({ subservices }: AccordionProps) {
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
+                id={`accordion-content-${index}`}
+                role="region"
+                aria-labelledby={`accordion-header-${index}`}
               >
                 <div className="px-6 pb-6 pt-2 border-t border-purple-500/10">
                   {/* Párrafo 1 */}
